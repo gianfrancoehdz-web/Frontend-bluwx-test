@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="./cart-store.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { background: #161512; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; text-decoration: none; transition: color .18s ease; }
+  ::selection { background: #57B98D; color: #161512; }
+  .co-body {
+    --bg: #161512; --fg: #F6F4EF; --panel: #201F1B;
+    --line: rgba(246,244,239,0.16); --line-strong: rgba(246,244,239,0.30);
+    --dim: #A79C8C; --accent: #57B98D; --on-accent: #0E1A15; --alert: #D69A4E;
+  }
+  .co-body[data-theme="light"] {
+    --bg: #F6F4EF; --fg: #161512; --panel: #ECE8E0;
+    --line: #C9C1B4; --line-strong: #A79C8C;
+    --dim: #6E6A62; --accent: #26433A; --on-accent: #F6F4EF; --alert: #B26B1E;
+  }
+  a:hover { color: var(--accent); }
+  .co-input {
+    width: 100%; background: var(--bg); border: 1px solid var(--line-strong); color: var(--fg);
+    border-radius: 12px; padding: 14px 16px; font-family: 'IBM Plex Mono', monospace; font-size: 15px;
+    letter-spacing: 0.02em; outline: none; transition: border-color .16s;
+  }
+  .co-input::placeholder { color: var(--dim); letter-spacing: 0.04em; }
+  .co-input:focus { border-color: var(--accent); }
+  .co-input.co-err { border-color: var(--alert); }
+  .co-grid { display: grid; grid-template-columns: 1fr; gap: clamp(24px,4vw,48px); }
+  @media (min-width: 900px) {
+    .co-grid { grid-template-columns: 1fr 380px; align-items: start; }
+    .co-summary { position: sticky; top: 96px; }
+  }
+  @keyframes co-spin { to { transform: rotate(360deg); } }
+  @keyframes co-fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .co-step { animation: co-fade .3s ease; }
+</style>
+</helmet>
+
+<div class="co-body" data-theme="{{ theme }}" style="font-family:'Inter',sans-serif; min-height:100vh; background:var(--bg); color:var(--fg); transition:background .25s, color .25s;">
+
+  <!-- ===== HEADER ===== -->
+  <header style="position:sticky; top:0; z-index:40; background:color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter:blur(12px); border-bottom:1px solid var(--line);">
+    <div style="max-width:1280px; margin:0 auto; padding:0 clamp(16px,4vw,40px); height:64px; display:flex; align-items:center; justify-content:space-between; gap:20px;">
+      <a href="index.dc.html" style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:22px; letter-spacing:0.14em; color:var(--fg);">BLUWX</a>
+      <div style="display:flex; align-items:center; gap:12px; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.06em; color:var(--dim);">
+        <span style="display:inline-flex; align-items:center; gap:6px;"><span style="color:var(--accent);">🔒</span> Secure demo checkout</span>
+        <button onClick="{{ toggleTheme }}" aria-label="Toggle theme" style="border:1px solid var(--line-strong); background:transparent; color:var(--fg); font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.06em; padding:7px 12px; cursor:pointer; border-radius:999px;" style-hover="border-color:var(--accent); color:var(--accent);">{{ themeLabel }}</button>
+      </div>
+    </div>
+  </header>
+
+  <main style="max-width:1180px; margin:0 auto; padding:clamp(20px,3vw,32px) clamp(16px,4vw,40px) clamp(56px,7vw,96px);">
+
+    <!-- breadcrumb -->
+    <nav style="font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.06em; color:var(--dim); margin-bottom:clamp(16px,2.5vw,22px);">
+      <a href="Shop.dc.html" style="color:var(--dim);" style-hover="color:var(--accent);">Shop</a>
+      <span style="margin:0 8px; color:var(--line-strong);">/</span>
+      <a href="Cart.dc.html" style="color:var(--dim);" style-hover="color:var(--accent);">Cart</a>
+      <span style="margin:0 8px; color:var(--line-strong);">/</span>
+      <span style="color:var(--fg);">Checkout</span>
+    </nav>
+
+    <h1 style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:clamp(32px,5vw,52px); line-height:0.98; letter-spacing:-0.025em; margin:0 0 clamp(20px,3vw,30px);">Checkout</h1>
+
+    <!-- ===== STEP INDICATOR ===== -->
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:clamp(24px,3.5vw,38px); font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.04em;">
+      <sc-for list="{{ steps }}" as="st" hint-placeholder-count="2">
+        <span style="display:inline-flex; align-items:center; gap:9px; color:{{ st.color }};">
+          <span style="display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:999px; border:1px solid {{ st.border }}; background:{{ st.bg }}; color:{{ st.numColor }}; font-size:12px;">{{ st.mark }}</span>
+          {{ st.label }}
+        </span>
+        <sc-if value="{{ st.showArrow }}" hint-placeholder-val="{{ true }}">
+          <span style="color:var(--line-strong);">———</span>
+        </sc-if>
+      </sc-for>
+    </div>
+
+    <div class="co-grid">
+
+      <!-- ===== LEFT · STEPS ===== -->
+      <div>
+
+        <!-- STEP 1 · IDENTIFICATION -->
+        <sc-if value="{{ isStep1 }}" hint-placeholder-val="{{ true }}">
+          <div class="co-step" style="border:1px solid var(--line); border-radius:20px; background:var(--panel); padding:clamp(22px,3.5vw,34px);">
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent); margin-bottom:6px;">Step 1 of 2</div>
+            <h2 style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:24px; letter-spacing:-0.02em; margin:0;">Continue as guest</h2>
+            <p style="font-size:14px; line-height:1.6; color:var(--dim); margin:10px 0 24px; max-width:44ch;">Enter your email and we'll send your order confirmation there. No password, no account needed.</p>
+
+            <label style="display:block; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--dim); margin-bottom:10px;">Email address</label>
+            <input class="co-input {{ emailErrClass }}" type="email" inputmode="email" autocomplete="email" placeholder="you@email.com" value="{{ email }}" onInput="{{ setEmail }}" onKeyDown="{{ onEmailKey }}"/>
+            <sc-if value="{{ emailError }}" hint-placeholder-val="{{ false }}">
+              <div style="color:var(--alert); font-family:'IBM Plex Mono',monospace; font-size:12px; margin-top:9px;">⚠ {{ emailErrorMsg }}</div>
+            </sc-if>
+
+            <button onClick="{{ goStep2 }}" style="margin-top:26px; width:100%; height:52px; background:var(--accent); color:var(--on-accent); border:none; border-radius:999px; cursor:pointer; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:16px;" style-hover="filter:brightness(1.06);">Continue to payment →</button>
+            <div style="display:flex; align-items:center; gap:8px; margin-top:16px; font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--dim);">
+              <span style="color:var(--accent);">✦</span> Guest checkout — we never store card data in this demo.
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- STEP 2 · PAYMENT -->
+        <sc-if value="{{ isStep2 }}" hint-placeholder-val="{{ false }}">
+          <div class="co-step" style="border:1px solid var(--line); border-radius:20px; background:var(--panel); padding:clamp(22px,3.5vw,34px);">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:6px;">
+              <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent);">Step 2 of 2</div>
+              <button onClick="{{ backStep1 }}" style="background:transparent; border:none; color:var(--dim); cursor:pointer; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.04em;" style-hover="color:var(--accent);">← Edit email</button>
+            </div>
+            <h2 style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:24px; letter-spacing:-0.02em; margin:0;">Payment</h2>
+            <p style="font-size:14px; line-height:1.6; color:var(--dim); margin:10px 0 6px;">Confirming for <span style="color:var(--fg);">{{ email }}</span></p>
+
+            <!-- fake card visual -->
+            <div style="position:relative; margin:22px 0 26px; aspect-ratio:16/9; max-width:340px; border-radius:16px; background:linear-gradient(135deg, #2A6350 0%, #57B98D 100%); overflow:hidden; box-shadow:0 14px 32px rgba(0,0,0,0.32);">
+              <div style="position:absolute; inset:0; padding:18px 20px; display:flex; flex-direction:column; justify-content:space-between; color:#0E1A15;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                  <span style="width:38px; height:28px; border-radius:6px; background:rgba(14,26,21,0.28);"></span>
+                  <span style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:15px; letter-spacing:0.12em;">BLUWX</span>
+                </div>
+                <div style="font-family:'IBM Plex Mono',monospace; font-size:15px; letter-spacing:0.14em; color:#0E1A15;">{{ cardDisplay }}</div>
+                <div style="display:flex; justify-content:space-between; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.06em; color:rgba(14,26,21,0.8);">
+                  <span>{{ nameDisplay }}</span><span>{{ expDisplay }}</span>
+                </div>
+              </div>
+            </div>
+
+            <label style="display:block; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--dim); margin-bottom:10px;">Card number</label>
+            <input class="co-input" inputmode="numeric" autocomplete="cc-number" placeholder="0000 0000 0000 0000" value="{{ card }}" onInput="{{ setCard }}"/>
+
+            <div style="display:flex; gap:14px; margin-top:18px;">
+              <div style="flex:1;">
+                <label style="display:block; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--dim); margin-bottom:10px;">Expiry</label>
+                <input class="co-input" inputmode="numeric" autocomplete="cc-exp" placeholder="MM/AA" value="{{ exp }}" onInput="{{ setExp }}"/>
+              </div>
+              <div style="flex:1;">
+                <label style="display:block; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--dim); margin-bottom:10px;">CVC</label>
+                <input class="co-input" inputmode="numeric" autocomplete="cc-csc" placeholder="000" value="{{ cvc }}" onInput="{{ setCvc }}"/>
+              </div>
+            </div>
+
+            <button onClick="{{ payNow }}" disabled="{{ paying }}" style="margin-top:26px; width:100%; height:54px; background:var(--accent); color:var(--on-accent); border:none; border-radius:999px; cursor:{{ payCursor }}; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:16px; display:inline-flex; align-items:center; justify-content:center; gap:11px; opacity:{{ payOpacity }};" style-hover="filter:brightness(1.06);">
+              <sc-if value="{{ paying }}" hint-placeholder-val="{{ false }}">
+                <span style="width:18px; height:18px; border-radius:999px; border:2px solid rgba(14,26,21,0.35); border-top-color:var(--on-accent); animation:co-spin .7s linear infinite; display:inline-block;"></span>
+              </sc-if>
+              {{ payLabel }}
+            </button>
+            <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:14px; font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--dim);">
+              <span style="color:var(--accent);">🔒</span> Demo only — no real charge, no Stripe connection.
+            </div>
+          </div>
+        </sc-if>
+
+      </div>
+
+      <!-- ===== RIGHT · ORDER SUMMARY ===== -->
+      <aside class="co-summary">
+        <div style="border:1px solid var(--line); border-radius:20px; background:var(--panel); padding:clamp(20px,3vw,26px);">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;">
+            <span style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:19px;">Order summary</span>
+            <a href="Cart.dc.html" style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.04em; color:var(--dim);" style-hover="color:var(--accent);">Edit</a>
+          </div>
+
+          <!-- empty guard -->
+          <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+            <div style="text-align:center; padding:24px 0;">
+              <p style="font-size:14px; color:var(--dim); margin:0 0 16px;">Your cart is empty.</p>
+              <a href="Shop.dc.html" style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--accent); border:1px solid var(--accent); border-radius:999px; padding:10px 18px; display:inline-block;">Browse shop →</a>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ hasItems }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex; flex-direction:column; gap:14px; margin-bottom:18px;">
+              <sc-for list="{{ items }}" as="it" hint-placeholder-count="2">
+                <div style="display:flex; align-items:center; gap:12px;">
+                  <div style="position:relative; width:52px; height:52px; flex:none; border-radius:10px; background:#f4f4f1; border:1px solid var(--line); overflow:hidden;">
+                    <img src="{{ it.img }}" alt="{{ it.name }}" style="width:100%; height:100%; object-fit:contain; padding:6px;"/>
+                    <span style="position:absolute; top:-7px; right:-7px; min-width:19px; height:19px; padding:0 5px; display:inline-flex; align-items:center; justify-content:center; background:var(--accent); color:var(--on-accent); border-radius:999px; font-family:'IBM Plex Mono',monospace; font-size:10px;">{{ it.qty }}</span>
+                  </div>
+                  <div style="flex:1; min-width:0;">
+                    <div style="font-family:'Space Grotesk',sans-serif; font-weight:500; font-size:14px; line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ it.name }}</div>
+                    <sc-if value="{{ it.hasVariant }}" hint-placeholder-val="{{ false }}">
+                      <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--dim); margin-top:2px;">{{ it.variantLabel }}</div>
+                    </sc-if>
+                  </div>
+                  <span style="font-family:'IBM Plex Mono',monospace; font-size:13px; white-space:nowrap;">{{ it.lineTotal }}</span>
+                </div>
+              </sc-for>
+            </div>
+
+            <svg viewBox="0 0 400 20" preserveAspectRatio="none" style="width:100%; height:14px; display:block; margin:4px 0 16px;" aria-hidden="true">
+              <line x1="0" y1="10" x2="400" y2="10" style="stroke:var(--line)" stroke-width="1"/>
+              <line x1="0" y1="2" x2="0" y2="18" style="stroke:var(--accent)" stroke-width="2"/>
+            </svg>
+
+            <div style="display:flex; justify-content:space-between; font-size:14px; color:var(--dim); margin-bottom:10px;">
+              <span>Subtotal</span><span style="font-family:'IBM Plex Mono',monospace; color:var(--fg);">{{ subtotalLabel }}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:14px; color:var(--dim); margin-bottom:16px;">
+              <span>Shipping</span><span style="font-family:'IBM Plex Mono',monospace; color:{{ shippingColor }};">{{ shippingLabel }}</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:baseline; border-top:1px solid var(--line); padding-top:16px;">
+              <span style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:17px;">Total</span>
+              <span style="font-family:'IBM Plex Mono',monospace; font-size:22px;">{{ totalLabel }}</span>
+            </div>
+          </sc-if>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- ===== PROCESSING OVERLAY ===== -->
+  <sc-if value="{{ paying }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed; inset:0; z-index:80; background:rgba(0,0,0,0.62); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; padding:20px;">
+      <div style="text-align:center; color:var(--fg);">
+        <span style="width:52px; height:52px; border-radius:999px; border:3px solid rgba(87,185,141,0.25); border-top-color:var(--accent); animation:co-spin .8s linear infinite; display:inline-block; margin-bottom:22px;"></span>
+        <div style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:20px; letter-spacing:-0.01em;">Processing payment…</div>
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--dim); margin-top:8px;">Please don't close this window</div>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="">
+const euro = (n) => "€" + n.toFixed(2).replace(".", ",");
+const FREE_SHIP = 90, SHIP_COST = 6.9;
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+class Component extends DCLogic {
+  state = { theme: "dark", step: 1, email: "", emailError: "", card: "", exp: "", cvc: "", paying: false, items: [] };
+
+  componentDidMount() {
+    this.setState({ items: window.CartStore ? window.CartStore.get() : [] });
+    this._off = window.CartStore ? window.CartStore.onChange((items) => this.setState({ items })) : null;
+  }
+  componentWillUnmount() { if (this._off) this._off(); if (this._payT) clearTimeout(this._payT); }
+
+  _fmtCard(v) { return v.replace(/\D/g, "").slice(0, 16).replace(/(.{4})/g, "$1 ").trim(); }
+  _fmtExp(v) {
+    const d = v.replace(/\D/g, "").slice(0, 4);
+    return d.length <= 2 ? d : d.slice(0, 2) + "/" + d.slice(2);
+  }
+  _fmtCvc(v) { return v.replace(/\D/g, "").slice(0, 4); }
+
+  _validateEmail() {
+    const ok = EMAIL_RE.test(this.state.email.trim());
+    this.setState({ emailError: ok ? "" : (this.state.email.trim() ? "Enter a valid email address." : "Email is required.") });
+    return ok;
+  }
+
+  renderVals() {
+    const s = this.state;
+    const items = s.items || [];
+    const subtotal = items.reduce((a, it) => a + it.price * it.qty, 0);
+    const shipping = items.length === 0 ? 0 : (subtotal >= FREE_SHIP ? 0 : SHIP_COST);
+    const total = subtotal + shipping;
+
+    const stepDef = (n, label) => {
+      const done = s.step > n, active = s.step === n;
+      return {
+        label, mark: done ? "✓" : String(n),
+        color: active || done ? "var(--fg)" : "var(--dim)",
+        border: active || done ? "var(--accent)" : "var(--line-strong)",
+        bg: done ? "var(--accent)" : (active ? "color-mix(in srgb, var(--accent) 22%, transparent)" : "transparent"),
+        numColor: done ? "var(--on-accent)" : (active ? "var(--accent)" : "var(--dim)"),
+      };
+    };
+
+    return {
+      theme: s.theme,
+      themeLabel: s.theme === "dark" ? "LIGHT ☀" : "DARK ☾",
+      toggleTheme: () => this.setState(st => ({ theme: st.theme === "dark" ? "light" : "dark" })),
+
+      steps: [
+        { ...stepDef(1, "Identification"), showArrow: true },
+        { ...stepDef(2, "Payment"), showArrow: false },
+      ],
+
+      isStep1: s.step === 1,
+      isStep2: s.step === 2,
+
+      email: s.email,
+      setEmail: (e) => this.setState({ email: e.target.value, emailError: "" }),
+      onEmailKey: (e) => { if (e.key === "Enter") { if (this._validateEmail()) this.setState({ step: 2 }); } },
+      emailError: !!s.emailError,
+      emailErrorMsg: s.emailError,
+      emailErrClass: s.emailError ? "co-err" : "",
+      goStep2: () => { if (this._validateEmail()) this.setState({ step: 2 }); },
+      backStep1: () => this.setState({ step: 1 }),
+
+      card: s.card,
+      exp: s.exp,
+      cvc: s.cvc,
+      setCard: (e) => this.setState({ card: this._fmtCard(e.target.value) }),
+      setExp: (e) => this.setState({ exp: this._fmtExp(e.target.value) }),
+      setCvc: (e) => this.setState({ cvc: this._fmtCvc(e.target.value) }),
+      cardDisplay: s.card || "•••• •••• •••• ••••",
+      expDisplay: s.exp || "MM/AA",
+      nameDisplay: (s.email ? s.email.split("@")[0].toUpperCase() : "CARDHOLDER"),
+
+      paying: s.paying,
+      payLabel: s.paying ? "Processing…" : "Pay now · " + euro(total),
+      payCursor: s.paying ? "wait" : "pointer",
+      payOpacity: s.paying ? "0.8" : "1",
+      payNow: () => {
+        if (s.paying) return;
+        this.setState({ paying: true });
+        this._payT = setTimeout(() => {
+          const order = {
+            number: "BLX-2026-" + String(Math.floor(100 + Math.random() * 9899)).padStart(5, "0"),
+            email: s.email.trim(),
+            total: total, itemCount: items.reduce((a, it) => a + it.qty, 0),
+            date: Date.now(),
+          };
+          try { localStorage.setItem("bluwx_last_order", JSON.stringify(order)); } catch (e) {}
+          if (window.CartStore) window.CartStore.clear();
+          location.href = "confirmation.dc.html";
+        }, 2600);
+      },
+
+      items: items.map(it => ({
+        name: it.name, img: it.img, qty: it.qty,
+        hasVariant: !!it.variantLabel, variantLabel: it.variantLabel,
+        lineTotal: euro(it.price * it.qty),
+      })),
+      isEmpty: items.length === 0,
+      hasItems: items.length > 0,
+      subtotalLabel: euro(subtotal),
+      shippingLabel: shipping === 0 ? "Free" : euro(shipping),
+      shippingColor: shipping === 0 ? "var(--accent)" : "var(--fg)",
+      totalLabel: euro(total),
+    };
+  }
+}
+</script>
+</body>
+</html>
