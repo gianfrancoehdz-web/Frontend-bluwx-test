@@ -47,7 +47,7 @@
   <!-- ===== HEADER ===== -->
   <header style="position:sticky; top:0; z-index:40; background:color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter:blur(12px); border-bottom:1px solid var(--line);">
     <div style="max-width:1280px; margin:0 auto; padding:0 clamp(16px,4vw,40px); height:64px; display:flex; align-items:center; justify-content:space-between; gap:20px;">
-      <a href="index.dc.html" style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:22px; letter-spacing:0.14em; color:var(--fg);">BLUWX</a>
+      <a href="index.dc.html" style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:22px; letter-spacing:0.14em; color:var(--fg);">BLU<span style="color:var(--accent);">WX</span></a>
       <div style="display:flex; align-items:center; gap:16px;">
         <a href="Cart.dc.html" style="font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.06em; color:var(--fg); display:inline-flex; align-items:center; gap:6px;">CART<span ref="{{ cartBadgeRef }}" style="display:inline-flex; align-items:center; justify-content:center; min-width:18px; height:18px; padding:0 5px; background:var(--accent); color:var(--on-accent); border-radius:9px; font-size:10px;">{{ cartCount }}</span></a>
         <button onClick="{{ toggleTheme }}" aria-label="Toggle theme" style="border:1px solid var(--line-strong); background:transparent; color:var(--fg); font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.06em; padding:7px 12px; cursor:pointer; border-radius:999px;" style-hover="border-color:var(--accent); color:var(--accent);">{{ themeLabel }}</button>
@@ -185,7 +185,7 @@ const CATALOG = {
   },
   tshirt: {
     name: "Performance T-Shirt", brand: "NeuronPadel", cat: "Apparel", price: 25.5, stock: "in",
-    description: "Lightweight moisture-wicking jersey with four-way stretch. Keeps you dry through the third set — cut for full range of motion.",
+    description: "Lightweight moisture-wicking jersey with four-way stretch. Keeps you dry through the third set, cut for full range of motion.",
     gallery: ["uploads/PERFORMANCE T-SHIRT.webp", "uploads/np-tshirt.webp"],
     variant: { label: "Size", type: "size", options: ["XS","S","M","L","XL","XXL"].map(s => ({ value: s, label: s })) },
     perks: ["Free EU shipping", "Free 30-day returns", "Ships in 24h"],
@@ -206,7 +206,7 @@ const CATALOG = {
   },
   balls: {
     name: "Pro+ Balls · Box of 24", brand: "NeuronPadel", cat: "Balls", price: 7, stock: "in",
-    description: "High-pressure felt balls with consistent bounce and durable core. One box holds 8 tubes of 3 — enough for a full season of matches.",
+    description: "High-pressure felt balls with consistent bounce and durable core. One box holds 8 tubes of 3, enough for a full season of matches.",
     gallery: ["uploads/PRO+ BALLS.webp", "uploads/np-balls.webp"],
     variant: null,
     perks: ["Free EU shipping", "Bulk pricing available", "Ships in 24h"],

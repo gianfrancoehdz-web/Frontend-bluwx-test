@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { background: #161512; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; text-decoration: none; transition: color .18s ease; }
+  ::selection { background: #57B98D; color: #161512; }
+  .jf-body {
+    --bg: #161512; --fg: #F6F4EF; --panel: #201F1B;
+    --line: rgba(246,244,239,0.16); --line-strong: rgba(246,244,239,0.30);
+    --dim: #A79C8C; --accent: #57B98D; --on-accent: #0E1A15;
+  }
+  .jf-body[data-theme="light"] {
+    --bg: #F6F4EF; --fg: #161512; --panel: #ECE8E0;
+    --line: #C9C1B4; --line-strong: #A79C8C;
+    --dim: #6E6A62; --accent: #26433A; --on-accent: #F6F4EF;
+  }
+  a:hover { color: var(--accent); }
+</style>
+</helmet>
+
+<div class="jf-body" data-theme="{{ theme }}" style="font-family:'Inter',sans-serif; min-height:100vh; background:var(--bg); color:var(--fg); display:flex; flex-direction:column;">
+
+  <header style="position:sticky; top:0; z-index:40; background:color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter:blur(12px); border-bottom:1px solid var(--line);">
+    <div style="max-width:1280px; margin:0 auto; padding:0 clamp(16px,4vw,40px); height:64px; display:flex; align-items:center; justify-content:space-between; gap:20px;">
+      <a href="index.dc.html" style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:22px; letter-spacing:0.14em; color:var(--fg);">BLU<span style="color:var(--accent);">WX</span></a>
+      <a href="HowItWorks.dc.html" style="font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.06em; color:var(--dim);" style-hover="color:var(--accent);">← How it works</a>
+    </div>
+  </header>
+
+  <main style="flex:1; display:flex; align-items:center; justify-content:center; padding:clamp(48px,9vw,120px) clamp(16px,4vw,40px);">
+    <div style="max-width:520px; width:100%; text-align:center;">
+      <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.18em; text-transform:uppercase; color:var(--accent);">Join BLUWX</div>
+      <h1 style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:clamp(30px,5vw,48px); line-height:1.02; letter-spacing:-0.03em; margin:16px 0 0; text-wrap:balance;">Join as {{ typeLabel }}</h1>
+      <p style="font-size:16px; line-height:1.62; color:var(--dim); margin:18px 0 0;">This is where the {{ typeLabel }} application form will live. We'll build it in detail next — your selected category is already captured.</p>
+
+      <div style="display:inline-flex; align-items:center; gap:10px; margin-top:26px; border:1px solid var(--accent); border-radius:999px; padding:11px 20px; background:color-mix(in srgb, var(--accent) 12%, transparent);">
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--dim);">Selected</span>
+        <span style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:15px; color:var(--fg);">{{ typeLabel }}</span>
+      </div>
+
+      <svg viewBox="0 0 520 20" preserveAspectRatio="none" style="width:100%; height:16px; display:block; margin:34px 0;" aria-hidden="true">
+        <line x1="0" y1="10" x2="520" y2="10" style="stroke:var(--line)" stroke-width="1"/>
+        <line x1="0" y1="2" x2="0" y2="18" style="stroke:var(--accent)" stroke-width="2"/>
+      </svg>
+
+      <div style="display:flex; flex-wrap:wrap; gap:12px; justify-content:center;">
+        <a href="HowItWorks.dc.html" style="display:inline-flex; align-items:center; justify-content:center; border:1px solid var(--line-strong); color:var(--fg); font-weight:500; font-size:15px; padding:14px 26px; border-radius:999px;" style-hover="border-color:var(--accent); color:var(--accent);">← Back</a>
+        <a href="index.dc.html" style="display:inline-flex; align-items:center; justify-content:center; background:var(--accent); color:var(--on-accent); font-weight:600; font-size:15px; padding:14px 28px; border-radius:999px;" style-hover="filter:brightness(1.06);">Home</a>
+      </div>
+    </div>
+  </main>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="">
+const LABELS = { company: "a Company", brand: "a Brand", club: "a Club", coach: "a Coach", ambassador: "an Ambassador", player: "a Player" };
+
+class Component extends DCLogic {
+  state = { theme: "dark", type: "player" };
+  componentDidMount() {
+    let t = "player";
+    try { t = new URLSearchParams(location.search).get("type") || "player"; } catch (e) {}
+    if (!LABELS[t]) t = "player";
+    this.setState({ type: t });
+  }
+  renderVals() {
+    return { theme: this.state.theme, typeLabel: LABELS[this.state.type] || "a Player" };
+  }
+}
+</script>
+</body>
+</html>

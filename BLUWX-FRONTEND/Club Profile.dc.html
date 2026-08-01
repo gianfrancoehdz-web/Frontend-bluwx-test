@@ -44,7 +44,7 @@
   <!-- ============================================================ -->
   <header style="position:sticky; top:0; z-index:40; background:color-mix(in srgb, var(--bg) 86%, transparent); backdrop-filter:blur(12px); border-bottom:1px solid var(--line);">
     <div style="max-width:1200px; margin:0 auto; padding:0 clamp(16px,4vw,40px); height:64px; display:flex; align-items:center; justify-content:space-between; gap:20px;">
-      <a href="index.dc.html" style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:22px; letter-spacing:0.14em; color:var(--fg);">BLUWX</a>
+      <a href="index.dc.html" style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:22px; letter-spacing:0.14em; color:var(--fg);">BLU<span style="color:var(--accent);">WX</span></a>
       <div style="display:flex; align-items:center; gap:16px;">
         <a href="index.dc.html" style="font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.06em; color:var(--dim);" style-hover="color:var(--accent);">← NETWORK</a>
         <button onClick="{{ toggleTheme }}" aria-label="Toggle theme" style="border:1px solid var(--line-strong); background:transparent; color:var(--fg); font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.06em; padding:7px 12px; cursor:pointer; border-radius:999px; transition:border-color .2s, color .2s;" style-hover="border-color:var(--accent); color:var(--accent);">{{ themeLabel }}</button>
@@ -227,6 +227,21 @@
       </div>
     </section>
 
+    <!-- ===== SPONSORS ===== -->
+    <section style="padding:0 0 clamp(40px,6vw,80px);">
+      <div style="border-top:1px solid var(--line-strong); padding-top:clamp(28px,4vw,48px);">
+        <div style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:clamp(20px,2.6vw,28px); letter-spacing:-0.01em; color:var(--accent); margin-bottom:20px;">Sponsors</div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px;">
+          <a href="https://taopadelacademy.com/" target="_blank" rel="noopener" style="display:flex; align-items:center; justify-content:center; background:#000; border:1px solid var(--line); border-radius:18px; padding:clamp(28px,4vw,44px); transition:transform .2s, box-shadow .2s;" style-hover="transform:translateY(-6px); box-shadow:0 16px 34px rgba(0,0,0,0.26);">
+            <img src="assets/tao-sponsor.png" alt="TAO Padel Academy" style="width:100%; max-width:180px; height:auto; display:block;"/>
+          </a>
+          <a href="https://www.pizzeriamonello.com/" target="_blank" rel="noopener" style="display:flex; align-items:center; justify-content:center; background:#000; border:1px solid var(--line); border-radius:18px; padding:clamp(28px,4vw,44px); transition:transform .2s, box-shadow .2s;" style-hover="transform:translateY(-6px); box-shadow:0 16px 34px rgba(0,0,0,0.26);">
+            <img src="assets/monello-sponsor.webp" alt="Pizzeria Monello" style="width:100%; max-width:220px; height:auto; display:block;"/>
+          </a>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <!-- ============================================================ -->
@@ -248,7 +263,7 @@
 
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;clubTag&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Club&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;clubName&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Alicante Padel Club&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;city&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Alicante, ES&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;courtsLine&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;8 indoor courts&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;established&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Open since 2014&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;description&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;A neighbourhood club a few streets back from the marina, built around eight glass courts and a terrace where matches are argued over long after they finish. Members range from Saturday-morning beginners to the regional league squad — everyone shares the same ball machine and the same coffee.&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;address&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Carrer del Doctor Just 12, 03005 Alicante, Spain&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;discountCode&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;ALICANTE15&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;discountMsg&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Members and visitors: apply the club code at checkout to save — every order supports the club.&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;clubTag&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Club&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;clubName&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Alicante Padel Club&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;city&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Alicante, ES&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;courtsLine&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;8 indoor courts&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;established&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Open since 2014&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;description&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;A neighbourhood club a few streets back from the marina, built around eight glass courts and a terrace where matches are argued over long after they finish. Members range from Saturday-morning beginners to the regional league squad, everyone shares the same ball machine and the same coffee.&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;address&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Carrer del Doctor Just 12, 03005 Alicante, Spain&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;discountCode&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;ALICANTE15&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;discountMsg&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Members and visitors: apply the club code at checkout to save, every order supports the club.&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
 class Component extends DCLogic {
   state = { theme: "dark", copied: false };
   renderVals() {
@@ -277,10 +292,10 @@ class Component extends DCLogic {
       city:        p.city ?? "Alicante, ES",
       courtsLine:  p.courtsLine ?? "8 indoor courts",
       established: p.established ?? "Open since 2014",
-      description: p.description ?? "A neighbourhood club a few streets back from the marina, built around eight glass courts and a terrace where matches are argued over long after they finish. Members range from Saturday-morning beginners to the regional league squad — everyone shares the same ball machine and the same coffee.",
+      description: p.description ?? "A neighbourhood club a few streets back from the marina, built around eight glass courts and a terrace where matches are argued over long after they finish. Members range from Saturday-morning beginners to the regional league squad, everyone shares the same ball machine and the same coffee.",
       address:     p.address ?? "Carrer del Doctor Just 12, 03005 Alicante, Spain",
       discountCode: p.discountCode ?? "ALICANTE15",
-      discountMsg: p.discountMsg ?? "Members and visitors: apply the club code at checkout to save — every order supports the club.",
+      discountMsg: p.discountMsg ?? "Members and visitors: apply the club code at checkout to save, every order supports the club.",
       hours: [
         { d: "Mon – Fri", t: "07:00 – 23:00" },
         { d: "Saturday", t: "08:00 – 22:00" },

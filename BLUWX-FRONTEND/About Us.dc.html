@@ -45,7 +45,7 @@
   <!-- FIXED · HEADER NAV -->
   <header style="position:sticky; top:0; z-index:40; background:color-mix(in srgb, var(--bg) 86%, transparent); backdrop-filter:blur(12px); border-bottom:1px solid var(--line);">
     <div style="max-width:1200px; margin:0 auto; padding:0 clamp(16px,4vw,40px); height:64px; display:flex; align-items:center; justify-content:space-between; gap:20px;">
-      <a href="index.dc.html" style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:22px; letter-spacing:0.14em; color:var(--fg);">BLUWX</a>
+      <a href="index.dc.html" style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:22px; letter-spacing:0.14em; color:var(--fg);">BLU<span style="color:var(--accent);">WX</span></a>
       <div style="display:flex; align-items:center; gap:16px;">
         <a href="index.dc.html" style="font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.06em; color:var(--dim);" style-hover="color:var(--accent);">← HOME</a>
         <button onClick="{{ toggleTheme }}" aria-label="Toggle theme" style="border:1px solid var(--line-strong); background:transparent; color:var(--fg); font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.06em; padding:7px 12px; cursor:pointer; border-radius:999px; transition:border-color .2s, color .2s;" style-hover="border-color:var(--accent); color:var(--accent);">{{ themeLabel }}</button>
@@ -85,7 +85,7 @@
           <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.16em; text-transform:uppercase; color:var(--accent);">United for padel</div>
           <h2 style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:clamp(28px,4.6vw,54px); line-height:1.0; letter-spacing:-0.02em; margin:14px 0 0; max-width:18ch; text-wrap:balance;">One continent, one game.</h2>
         </div>
-        <p style="font-size:15px; line-height:1.55; color:var(--dim); max-width:36ch;">The scale BLUWX connects — every club, court, coach and player across Europe feeds the same community.</p>
+        <p style="font-size:15px; line-height:1.55; color:var(--dim); max-width:36ch;">The scale BLUWX connects, every club, court, coach and player across Europe feeds the same community.</p>
       </div>
 
       <div class="about-stats" style="display:grid; gap:clamp(12px,1.5vw,18px);">
@@ -96,6 +96,21 @@
             <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color:var(--dim); margin-top:12px;">{{ s.label }}</div>
           </div>
         </sc-for>
+      </div>
+    </section>
+
+    <!-- ===== SPONSORS ===== -->
+    <section style="padding:0 0 clamp(40px,6vw,80px);">
+      <div style="border-top:1px solid var(--line-strong); padding-top:clamp(28px,4vw,48px);">
+        <div style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:clamp(20px,2.6vw,28px); letter-spacing:-0.01em; color:var(--accent); margin-bottom:20px;">Sponsors</div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px;">
+          <a href="https://taopadelacademy.com/" target="_blank" rel="noopener" style="display:flex; align-items:center; justify-content:center; background:#000; border:1px solid var(--line); border-radius:18px; padding:clamp(28px,4vw,44px); transition:transform .2s, box-shadow .2s;" style-hover="transform:translateY(-6px); box-shadow:0 16px 34px rgba(0,0,0,0.26);">
+            <img src="assets/tao-sponsor.png" alt="TAO Padel Academy" style="width:100%; max-width:180px; height:auto; display:block;"/>
+          </a>
+          <a href="https://www.pizzeriamonello.com/" target="_blank" rel="noopener" style="display:flex; align-items:center; justify-content:center; background:#000; border:1px solid var(--line); border-radius:18px; padding:clamp(28px,4vw,44px); transition:transform .2s, box-shadow .2s;" style-hover="transform:translateY(-6px); box-shadow:0 16px 34px rgba(0,0,0,0.26);">
+            <img src="assets/monello-sponsor.webp" alt="Pizzeria Monello" style="width:100%; max-width:220px; height:auto; display:block;"/>
+          </a>
+        </div>
       </div>
     </section>
 
