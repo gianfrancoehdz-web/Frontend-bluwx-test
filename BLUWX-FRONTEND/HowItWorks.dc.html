@@ -87,7 +87,7 @@
           </div>
           <sc-if value="{{ a.hasImg }}" hint-placeholder-val="{{ false }}">
             <div style="margin-top:20px; aspect-ratio:4/3; border-radius:18px; overflow:hidden; border:1px solid var(--line); background:var(--panel);">
-              <img src="{{ a.img }}" alt="{{ a.eyebrow }}" style="width:100%; height:100%; object-fit:cover; display:block;"/>
+              <img src="{{ a.img }}" alt="{{ a.eyebrow }}" style="width:100%; height:100%; object-fit:cover; object-position:{{ a.imgPos }}; display:block;"/>
             </div>
           </sc-if>
         </div>
@@ -201,10 +201,16 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="">
 const TICKER_LINES = [
-  { text: "Every new partner makes the platform stronger.", accentFrom: -1 },
-  { text: "Every new connection creates new opportunities.", accentFrom: -1 },
-  { text: "Every purchase helps grow the European padel community.", accentFrom: 29 },
+  { text: "Every new partner makes the platform stronger." },
+  { text: "Every new connection creates new opportunities." },
+  { text: "Every purchase helps grow the European padel community." },
 ];
+
+function accentFromLastTwoWords(text) {
+  const words = text.trim().split(" ");
+  const lastTwo = words.slice(-2).join(" ");
+  return text.length - lastTwo.length;
+}
 
 function Ticker() {
   const [idx, setIdx] = React.useState(0);
@@ -226,29 +232,39 @@ function Ticker() {
   }, [phase, n, idx]);
 
   const shown = line.text.slice(0, n);
-  const af = line.accentFrom;
+  const af = accentFromLastTwoWords(line.text);
   let head = shown, tail = "";
-  if (af >= 0 && n > af) { head = shown.slice(0, af); tail = shown.slice(af); }
+  if (n > af) { head = shown.slice(0, af); tail = shown.slice(af); }
 
-  return React.createElement("div", {
-    style: {
-      fontFamily: "'Space Grotesk',sans-serif", fontWeight: 600,
-      fontSize: "clamp(26px,4.4vw,52px)", letterSpacing: "-0.03em", lineHeight: 1.04,
-      color: "var(--fg)", opacity: phase === "fade" ? 0 : 1,
-      transform: phase === "fade" ? "translateY(-6px)" : "none",
-      transition: "opacity .5s ease, transform .5s ease", textWrap: "balance",
-    },
-  },
-    head,
-    tail ? React.createElement("span", { style: { color: "var(--accent)" } }, tail) : null,
-    React.createElement("span", {
+  const textStyle = {
+    fontFamily: "'Space Grotesk',sans-serif", fontWeight: 600,
+    fontSize: "clamp(26px,4.4vw,52px)", letterSpacing: "-0.03em", lineHeight: 1.04,
+    textWrap: "balance", gridArea: "1 / 1",
+  };
+
+  return React.createElement("div", { style: { position: "relative", display: "grid" } },
+    // invisible full-text placeholder: locks the paragraph's line-wrap structure so it never reflows while typing
+    React.createElement("div", { style: { ...textStyle, color: "transparent", pointerEvents: "none" } }, line.text),
+    // visible typed layer, overlaid on the same box
+    React.createElement("div", {
       style: {
-        display: "inline-block", width: "3px", height: "1em", marginLeft: "4px",
-        background: "var(--accent)", verticalAlign: "-0.12em",
-        opacity: phase === "type" ? 1 : 0,
-        animation: "hiw-caret 1s steps(1) infinite",
+        ...textStyle, color: "var(--fg)",
+        opacity: phase === "fade" ? 0 : 1,
+        transform: phase === "fade" ? "translateY(-6px)" : "none",
+        transition: "opacity .5s ease, transform .5s ease",
       },
-    }),
+    },
+      head,
+      tail ? React.createElement("span", { style: { color: "var(--accent)" } }, tail) : null,
+      React.createElement("span", {
+        style: {
+          display: "inline-block", width: "3px", height: "1em", marginLeft: "4px",
+          background: "var(--accent)", verticalAlign: "-0.12em",
+          opacity: phase === "type" ? 1 : 0,
+          animation: "hiw-caret 1s steps(1) infinite",
+        },
+      }),
+    ),
   );
 }
 
@@ -273,7 +289,7 @@ class Component extends DCLogic {
       audiences: [
         {
           num: "01", eyebrow: "For companies & brands", revClass: "",
-          hasImg: true, img: "uploads/Company-home.png",
+          hasImg: true, img: "uploads/Company-home.png", imgPos: "center",
           headline: "Expand your business across Europe.",
           body: "BLUWX gives companies and brands the chance to showcase and sell their products through a unique network of clubs, coaches and ambassadors. Instead of relying only on traditional distribution channels, your products become visible to thousands of players who trust the recommendations of professionals and their local clubs. With your own dedicated brand page, product catalogue and business dashboard, you can monitor sales, manage products and grow your presence across Europe.",
           hasChips: true, chips: ["Sell products across Europe", "Dedicated brand page", "Product management dashboard", "Access to clubs, coaches and ambassadors", "Sales analytics and reporting", "New commercial opportunities"],
@@ -281,7 +297,7 @@ class Component extends DCLogic {
         },
         {
           num: "02", eyebrow: "For clubs", revClass: "rev",
-          hasImg: true, img: "uploads/CLUB-portada-referencia.jpg",
+          hasImg: true, img: "uploads/CLUB-portada-referencia.jpg", imgPos: "center",
           headline: "Turn your community into a new source of revenue.",
           body: "Every club receives its own personalised page where members discover and buy recommended products. Every purchase made through the club generates revenue for the club, just share your BLUWX page and let your members shop online.",
           hasChips: false, chips: [],
@@ -289,7 +305,7 @@ class Component extends DCLogic {
         },
         {
           num: "03", eyebrow: "For coaches", revClass: "",
-          hasImg: true, img: "uploads/coaches.png",
+          hasImg: true, img: "uploads/coaches.png", imgPos: "center 30%",
           headline: "Your experience has value. Your recommendations matter.",
           body: "Create your personal page, select the products you trust and recommend them to your students. When your players buy through your page, you earn commission while helping them choose the right equipment.",
           hasChips: false, chips: [],
@@ -297,7 +313,7 @@ class Component extends DCLogic {
         },
         {
           num: "04", eyebrow: "For ambassadors", revClass: "rev",
-          hasImg: true, img: "uploads/Ambassadors.png",
+          hasImg: true, img: "uploads/Ambassadors.png", imgPos: "center",
           headline: "Your community becomes your business.",
           body: "Share your favourite products, inspire your followers and grow your personal brand. BLUWX runs the platform while you focus on creating content and connecting with your audience.",
           hasChips: false, chips: [],
@@ -305,7 +321,7 @@ class Component extends DCLogic {
         },
         {
           num: "05", eyebrow: "For players", revClass: "",
-          hasImg: true, img: "uploads/players-home-3.jpg",
+          hasImg: true, img: "uploads/players-home-3.jpg", imgPos: "center",
           headline: "Everything you need. One platform.",
           body: "Discover premium padel products recommended by trusted clubs, coaches and ambassadors. Enjoy exclusive offers, special promotions and easy access to the best padel gear in Europe.",
           hasChips: false, chips: [],
