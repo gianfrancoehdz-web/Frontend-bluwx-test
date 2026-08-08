@@ -21,6 +21,7 @@
     --bg: #161512; --fg: #F6F4EF; --panel: #201F1B;
     --line: rgba(246,244,239,0.16); --line-strong: rgba(246,244,239,0.30);
     --dim: #A79C8C; --accent: #57B98D; --on-accent: #0E1A15; --alert: #D69A4E;
+    padding-top: clamp(76px,9vw,104px);
   }
   .hiw-body[data-theme="light"] {
     --bg: #F6F4EF; --fg: #161512; --panel: #ECE8E0;
@@ -33,10 +34,11 @@
     .hiw-aud { grid-template-columns: 0.9fr 1.1fr; }
     .hiw-aud.rev .hiw-aud-media { order: 2; }
   }
-  .hiw-cta-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
-  @media (min-width: 560px) { .hiw-cta-grid { grid-template-columns: 1fr 1fr; } }
-  @media (min-width: 900px) { .hiw-cta-grid { grid-template-columns: repeat(3, 1fr); } }
-  @media (min-width: 760px) { .hiw-nav { display: flex !important; } }
+  .hiw-join-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+  @media (min-width: 560px) { .hiw-join-grid { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 760px) { .hiw-navlinks { display: flex !important; } }
+  .hiw-menubtn { display: inline-flex; }
+  @media (min-width: 880px) { .hiw-menubtn { display: none; } .hiw-mobilemenu { display: none !important; } }
   .hiw-ben-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
   @media (min-width: 620px) { .hiw-ben-grid { grid-template-columns: 1fr 1fr; } }
   @media (min-width: 960px) { .hiw-ben-grid { grid-template-columns: repeat(3, 1fr); } }
@@ -47,26 +49,36 @@
 <div class="hiw-body" data-theme="{{ theme }}" style="font-family:'Inter',sans-serif; min-height:100vh; background:var(--bg); color:var(--fg); transition:background .25s, color .25s;">
 
   <!-- ===== HEADER ===== -->
-  <header style="position:sticky; top:0; z-index:40; background:color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter:blur(12px); border-bottom:1px solid var(--line);">
-    <div style="max-width:1280px; margin:0 auto; padding:0 clamp(16px,4vw,40px); height:64px; display:flex; align-items:center; justify-content:space-between; gap:20px;">
-      <a href="index.dc.html" style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:22px; letter-spacing:0.14em; color:var(--fg);">BLU<span style="color:var(--accent);">WX</span></a>
-      <nav class="hiw-nav" style="display:none; align-items:center; gap:30px; font-size:14px; font-weight:500;">
-        <a href="index.dc.html" style="color:var(--fg);" style-hover="color:var(--accent);">Home</a>
-        <a href="Shop.dc.html" style="color:var(--fg);" style-hover="color:var(--accent);">Shop</a>
-        <a href="HowItWorks.dc.html" style="color:var(--accent);">How it works</a>
+  <header style="{{ headerStyle }}">
+    <div style="{{ headerInnerStyle }}">
+      <a href="index.dc.html" style="{{ logoStyle }}">BLU<span style="color:var(--accent);">WX</span></a>
+      <nav class="hiw-navlinks" style="{{ navStyle }}">
+        <sc-for list="{{ navItems }}" as="link" hint-placeholder-count="5">
+          <a href="{{ link.href }}" style="padding:4px 0; color:{{ link.color }};" style-hover="color:var(--accent);">{{ link.label }}</a>
+        </sc-for>
       </nav>
-      <div style="display:flex; align-items:center; gap:14px;">
-        <button onClick="{{ toggleTheme }}" aria-label="Toggle theme" style="border:1px solid var(--line-strong); background:transparent; color:var(--fg); font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.06em; padding:7px 12px; cursor:pointer; border-radius:999px;" style-hover="border-color:var(--accent); color:var(--accent);">{{ themeLabel }}</button>
+      <div style="{{ rightGroupStyle }}">
+        <button onClick="{{ toggleTheme }}" aria-label="Toggle theme" style="{{ themeBtnStyle }}" style-hover="border-color:var(--accent); color:var(--accent);">{{ themeLabel }}</button>
         <a href="Cart.dc.html" style="font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.06em; color:var(--fg); display:inline-flex; align-items:center; gap:6px;">CART<span style="display:inline-flex; align-items:center; justify-content:center; min-width:18px; height:18px; padding:0 5px; background:var(--accent); color:var(--on-accent); border-radius:9px; font-size:10px;">{{ cartCount }}</span></a>
+        <button class="hiw-menubtn" onClick="{{ toggleMenu }}" aria-label="Menu" style="border:1px solid var(--fg); background:transparent; width:40px; height:36px; align-items:center; justify-content:center; cursor:pointer; padding:0; border-radius:12px;">
+          <div style="width:16px; height:1.5px; background:var(--fg); box-shadow:0 5px 0 var(--fg), 0 -5px 0 var(--fg);"></div>
+        </button>
       </div>
     </div>
+    <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+      <div class="hiw-mobilemenu" style="border-top:1px solid var(--line); background:var(--bg); border-radius:0 0 24px 24px; padding:8px clamp(16px,4vw,40px) 20px;">
+        <sc-for list="{{ navItems }}" as="link" hint-placeholder-count="5">
+          <a href="{{ link.href }}" style="display:block; padding:13px 0; font-family:'Space Grotesk',sans-serif; font-size:19px; font-weight:500; color:var(--fg); border-bottom:1px solid var(--line);" style-hover="color:var(--accent);">{{ link.label }}</a>
+        </sc-for>
+      </div>
+    </sc-if>
   </header>
 
   <!-- ===== HERO ===== -->
   <section style="max-width:1120px; margin:0 auto; padding:clamp(48px,8vw,104px) clamp(16px,4vw,40px) clamp(30px,4vw,52px);">
     <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.18em; text-transform:uppercase; color:var(--accent);">How BLUWX works</div>
     <h1 style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:clamp(38px,6.5vw,80px); line-height:0.98; letter-spacing:-0.03em; margin:18px 0 0; max-width:16ch; text-wrap:balance;">One platform. One community. Endless opportunities.</h1>
-    <p style="font-size:clamp(16px,1.5vw,19px); line-height:1.62; color:var(--dim); max-width:60ch; margin:26px 0 0; text-wrap:pretty;">BLUWX is an online store, but much more than that. It's Europe's digital padel platform, uniting companies, brands, clubs, coaches, ambassadors and players in one connected ecosystem. Whether you manufacture products, run a club, coach players or simply love the game, BLUWX gives you new opportunities to grow, connect and do business.</p>
+    <p style="font-size:clamp(16px,1.5vw,19px); line-height:1.62; color:var(--dim); max-width:60ch; margin:26px 0 0; text-wrap:pretty;">BLUWX is an online store, but much more than that. It's the digital padel platform, uniting companies, brands, clubs, coaches, influencers and players in one connected ecosystem. Whether you manufacture products, run a club, coach players or simply love the game, BLUWX gives you new opportunities to grow, connect and do business.</p>
     <svg viewBox="0 0 1200 30" preserveAspectRatio="none" style="width:100%; height:22px; display:block; margin-top:clamp(30px,4vw,48px);" aria-hidden="true">
       <line x1="0" y1="15" x2="1200" y2="15" style="stroke:var(--line-strong)" stroke-width="1"/>
       <line x1="0" y1="4" x2="0" y2="26" style="stroke:var(--accent)" stroke-width="2"/>
@@ -108,6 +120,27 @@
             </div>
           </sc-if>
 
+          <!-- coach mode buttons -->
+          <sc-if value="{{ a.hasCoachButtons }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-wrap:wrap; gap:12px; margin-top:24px;">
+              <a href="JoinForm.dc.html?type=coach&mode=private" style="flex:1; min-width:180px; display:flex; flex-direction:column; gap:4px; border:1px solid var(--line-strong); border-radius:14px; padding:16px 18px; transition:border-color .2s, transform .2s;" style-hover="border-color:var(--accent); transform:translateY(-3px);">
+                <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--dim);">Coach</span>
+                <span style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:17px;">Private lessons</span>
+              </a>
+              <a href="JoinForm.dc.html?type=coach&mode=academy" style="flex:1; min-width:180px; display:flex; flex-direction:column; gap:4px; border:1px solid var(--line-strong); border-radius:14px; padding:16px 18px; transition:border-color .2s, transform .2s;" style-hover="border-color:var(--accent); transform:translateY(-3px);">
+                <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--dim);">Coach</span>
+                <span style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:17px;">Academy</span>
+              </a>
+            </div>
+          </sc-if>
+
+          <!-- free registration note -->
+          <sc-if value="{{ a.hasFreeNote }}" hint-placeholder-val="{{ false }}">
+            <div style="display:inline-flex; align-items:center; gap:8px; margin-top:22px; font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.03em; color:var(--accent); border:1px solid var(--accent); border-radius:999px; padding:9px 16px;">
+              <span>✓</span>Free registration for clubs, coaches, influencers and players.
+            </div>
+          </sc-if>
+
           <!-- big triple points (clubs) -->
           <sc-if value="{{ a.hasTriple }}" hint-placeholder-val="{{ false }}">
             <div style="display:flex; flex-wrap:wrap; gap:clamp(18px,3vw,40px); margin-top:24px;">
@@ -120,6 +153,27 @@
             </div>
           </sc-if>
         </div>
+
+        <!-- pricing plans (companies & brands) — full width below media + bullets -->
+        <sc-if value="{{ a.hasPricing }}" hint-placeholder-val="{{ false }}">
+          <div style="grid-column:1 / -1; margin-top:8px; background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:clamp(20px,3vw,28px);">
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--accent); margin-bottom:16px;">For companies and brands wishing to sell on the site</div>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px;">
+              <sc-for list="{{ a.pricingTiers }}" as="p" hint-placeholder-count="4">
+                <div style="border:1px solid var(--line); border-radius:14px; padding:16px;">
+                  <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:22px; letter-spacing:-0.01em;">{{ p.price }}<span style="font-size:13px; font-weight:500; color:var(--dim);">/mo</span></div>
+                  <div style="font-size:13px; line-height:1.5; color:var(--dim); margin-top:8px;">{{ p.desc }}</div>
+                  <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--accent); margin-top:10px;">{{ p.annual }} annually</div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:18px; margin-top:18px;">
+              <p style="font-size:14px; line-height:1.6; color:var(--dim); margin:0;">Plus a 15% commission payable to the platform, calculated on the net amount (excluding VAT) of products sold during the month.</p>
+              <p style="font-size:14px; line-height:1.6; color:var(--dim); margin:0;">The company or brand sets the selling prices, taking into account that 5% represents the discount received by the buyer, 15% is the commission for the club, coach, or influencer, and 15% is the commission for the platform.</p>
+              <p style="font-size:14px; line-height:1.6; color:var(--dim); margin:0;">Companies and brands can build their own stores within the platform. If this task is delegated to the site, the actual costs for the work performed will be charged.</p>
+            </div>
+          </div>
+        </sc-if>
       </section>
     </sc-for>
 
@@ -152,23 +206,30 @@
   </main>
 
   <!-- ===== FINAL CTA ===== -->
-  <section style="border-top:1px solid var(--line); background:var(--panel);">
+  <section id="join" style="border-top:1px solid var(--line); background:var(--panel); scroll-margin-top:calc(clamp(12px,2.4vw,20px) + 60px + 32px);">
     <div style="max-width:1120px; margin:0 auto; padding:clamp(48px,7vw,96px) clamp(16px,4vw,40px);">
       <div style="text-align:center; max-width:60ch; margin:0 auto;">
         <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.18em; text-transform:uppercase; color:var(--accent);">Join the future of padel</div>
         <h2 style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:clamp(30px,5vw,58px); line-height:1.0; letter-spacing:-0.03em; margin:16px 0 0; text-wrap:balance;">Join the Future of Padel</h2>
-        <p style="font-size:16px; line-height:1.62; color:var(--dim); margin:20px 0 0;">Whether you are a company, a brand, a club, a coach, an ambassador or a passionate player, BLUWX is where European padel connects, grows and does business. Join the platform. Build the future of padel.</p>
+        <p style="font-size:16px; line-height:1.62; color:var(--dim); margin:20px 0 0;">Whether you are a company, a brand, a club, a coach, an influencer or a passionate player, BLUWX is where padel connects, grows and does business, wherever you play. Join the platform. Build the future of padel.</p>
       </div>
 
-      <div class="hiw-cta-grid" style="margin-top:clamp(32px,4vw,52px);">
-        <sc-for list="{{ joinCards }}" as="j" hint-placeholder-count="6">
-          <a href="{{ j.href }}" style="display:flex; align-items:center; justify-content:space-between; gap:14px; border:1px solid var(--line-strong); border-radius:16px; background:var(--bg); padding:20px 22px; transition:transform .2s, border-color .2s, box-shadow .2s;" style-hover="transform:translateY(-4px); border-color:var(--accent); box-shadow:0 14px 30px rgba(0,0,0,0.24);">
-            <span style="display:flex; flex-direction:column; gap:4px;">
-              <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--dim);">{{ j.tag }}</span>
-              <span style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:19px; letter-spacing:-0.01em;">{{ j.label }}</span>
-            </span>
-            <span style="flex:none; width:34px; height:34px; border-radius:999px; border:1px solid var(--accent); color:var(--accent); display:inline-flex; align-items:center; justify-content:center; font-size:15px;">→</span>
-          </a>
+      <div style="margin-top:clamp(32px,4vw,52px);">
+        <sc-for list="{{ joinGroups }}" as="grp" hint-placeholder-count="3">
+          <div style="margin-bottom:clamp(20px,3vw,28px);">
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.1em; text-transform:uppercase; color:{{ grp.color }}; margin-bottom:14px;">{{ grp.title }}</div>
+            <div class="hiw-join-grid">
+              <sc-for list="{{ grp.items }}" as="j" hint-placeholder-count="2">
+                <a href="{{ j.href }}" style="display:flex; align-items:center; justify-content:space-between; gap:14px; border:1px solid {{ grp.color }}; border-radius:16px; background:var(--bg); padding:20px 22px; transition:transform .2s, box-shadow .2s;" style-hover="transform:translateY(-4px); box-shadow:0 14px 30px rgba(0,0,0,0.24);">
+                  <span style="display:flex; flex-direction:column; gap:4px;">
+                    <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:{{ grp.color }};">{{ j.tag }}</span>
+                    <span style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:18px; letter-spacing:-0.01em;">{{ j.label }}</span>
+                  </span>
+                  <span style="flex:none; width:32px; height:32px; border-radius:999px; border:1px solid {{ grp.color }}; color:{{ grp.color }}; display:inline-flex; align-items:center; justify-content:center; font-size:14px;">→</span>
+                </a>
+              </sc-for>
+            </div>
+          </div>
         </sc-for>
       </div>
     </div>
@@ -185,6 +246,10 @@
         <a href="https://www.pizzeriamonello.com/" target="_blank" rel="noopener" style="display:flex; align-items:center; justify-content:center; background:#000; border:1px solid var(--line); border-radius:18px; padding:clamp(28px,4vw,44px); transition:transform .2s, box-shadow .2s;" style-hover="transform:translateY(-6px); box-shadow:0 16px 34px rgba(0,0,0,0.26);">
           <img src="assets/monello-sponsor.webp" alt="Pizzeria Monello" style="width:100%; max-width:220px; height:auto; display:block;"/>
         </a>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:16px; margin-top:20px; background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:clamp(20px,3vw,28px);">
+        <p style="font-size:15px; line-height:1.5; color:var(--dim); margin:0; max-width:44ch;">Want your brand next to theirs? Become a BLUWX sponsor and get in front of our clubs, coaches and players.</p>
+        <a href="JoinForm.dc.html?type=company&reason=sponsor" style="flex-shrink:0; display:inline-flex; align-items:center; justify-content:center; background:var(--accent); color:var(--on-accent); font-weight:600; font-size:15px; padding:14px 26px; border-radius:999px; white-space:nowrap;" style-hover="filter:brightness(1.06);">Become a sponsor</a>
       </div>
     </div>
   </section>
@@ -203,7 +268,7 @@
 const TICKER_LINES = [
   { text: "Every new partner makes the platform stronger." },
   { text: "Every new connection creates new opportunities." },
-  { text: "Every purchase helps grow the European padel community." },
+  { text: "Every purchase helps grow the padel community." },
 ];
 
 function accentFromLastTwoWords(text) {
@@ -269,16 +334,58 @@ function Ticker() {
 }
 
 class Component extends DCLogic {
-  state = { theme: "dark", cartCount: 0 };
+  state = { theme: "dark", cartCount: 0, compact: false, menuOpen: false };
 
   componentDidMount() {
-    this.setState({ cartCount: window.CartStore ? window.CartStore.count() : 0 });
+    this.setState({ cartCount: window.CartStore ? window.CartStore.count() : 0, compact: (window.scrollY || 0) > 110 });
     this._off = window.CartStore ? window.CartStore.onChange(() => this.setState({ cartCount: window.CartStore.count() })) : null;
+    if (window.__bluwxHeaderScrollBound) { this._ownsScrollLock = false; }
+    else {
+      window.__bluwxHeaderScrollBound = true;
+      this._ownsScrollLock = true;
+      this._lastY = window.scrollY || 0;
+      let ticking = false;
+      this._onScroll = () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          const y = window.scrollY || 0;
+          const goingDown = y > this._lastY + 2;
+          const goingUp = y < this._lastY - 2;
+          let next = this.state.compact;
+          if (y < 32) next = false;
+          else if (goingDown && y > 110) next = true;
+          else if (goingUp) next = false;
+          this._lastY = y;
+          ticking = false;
+          if (next !== this.state.compact) this.setState({ compact: next });
+        });
+      };
+      window.addEventListener("scroll", this._onScroll, { passive: true });
+    }
   }
-  componentWillUnmount() { if (this._off) this._off(); }
+  componentWillUnmount() {
+    if (this._off) this._off();
+    if (this._ownsScrollLock) { window.removeEventListener("scroll", this._onScroll); window.__bluwxHeaderScrollBound = false; }
+  }
 
   renderVals() {
     const s = this.state;
+    const compact = s.compact;
+    const TRANS = "transition: top .4s cubic-bezier(.4,0,.2,1), width .4s cubic-bezier(.4,0,.2,1), border-radius .4s ease, background .3s ease;";
+    const headerStyle = compact
+      ? `position:fixed; top:10px; left:50%; right:auto; transform:translateX(-50%); z-index:40; width:min(420px,92vw); border-radius:999px; background:color-mix(in srgb, var(--bg) 62%, transparent); backdrop-filter:blur(20px) saturate(1.6); -webkit-backdrop-filter:blur(20px) saturate(1.6); border:1px solid color-mix(in srgb, var(--fg) 14%, transparent); box-shadow:0 12px 34px rgba(0,0,0,0.26), inset 0 1px 0 color-mix(in srgb, var(--fg) 10%, transparent); ${TRANS}`
+      : `position:fixed; top:clamp(12px,2.4vw,20px); left:50%; right:auto; transform:translateX(-50%); z-index:40; width:min(1280px, calc(100vw - clamp(24px,6vw,56px))); border-radius:999px; background:color-mix(in srgb, var(--bg) 55%, transparent); backdrop-filter:blur(20px) saturate(1.6); -webkit-backdrop-filter:blur(20px) saturate(1.6); border:1px solid color-mix(in srgb, var(--fg) 14%, transparent); box-shadow:0 12px 34px rgba(0,0,0,0.22), inset 0 1px 0 color-mix(in srgb, var(--fg) 10%, transparent); ${TRANS}`;
+    const headerInnerStyle = compact
+      ? "max-width:1280px; margin:0 auto; padding:0 10px 0 18px; height:52px; display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:8px; transition:all .35s cubic-bezier(.4,0,.2,1);"
+      : "max-width:1280px; margin:0 auto; padding:0 clamp(16px,4vw,32px); height:60px; display:flex; align-items:center; justify-content:space-between; gap:24px; transition:all .35s cubic-bezier(.4,0,.2,1);";
+    const logoStyle = `font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:${compact ? "19px" : "22px"}; letter-spacing:0.14em; color:var(--fg); transition:font-size .35s ease;` + (compact ? " grid-column:2; justify-self:center;" : "");
+    const navStyle = "align-items:center; gap:34px; font-size:14px; font-weight:500;" + (compact ? " display:none;" : "");
+    const rightGroupStyle = compact
+      ? "display:flex; align-items:center; gap:8px; grid-column:3; justify-self:end;"
+      : "display:flex; align-items:center; gap:16px;";
+    const themeBtnStyle = "border:1px solid var(--line-strong); background:transparent; color:var(--fg); font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.06em; padding:7px 12px; cursor:pointer; border-radius:999px; transition:border-color .2s, color .2s;" + (compact ? " display:none;" : "");
+
     return {
       theme: s.theme,
       themeLabel: s.theme === "dark" ? "LIGHT ☀" : "DARK ☾",
@@ -286,13 +393,29 @@ class Component extends DCLogic {
       cartCount: s.cartCount,
       ticker: React.createElement(Ticker),
 
+      headerStyle, headerInnerStyle, logoStyle, navStyle, rightGroupStyle, themeBtnStyle,
+      menuOpen: s.menuOpen,
+      toggleMenu: () => this.setState(st => ({ menuOpen: !st.menuOpen })),
+      navItems: [
+        { label: "Home", href: "index.dc.html", color: "var(--fg)" },
+        { label: "Shop", href: "Shop.dc.html", color: "var(--fg)" },
+        { label: "How it works", href: "HowItWorks.dc.html", color: "var(--accent)" },
+      ],
+
       audiences: [
         {
           num: "01", eyebrow: "For companies & brands", revClass: "",
           hasImg: true, img: "uploads/Company-home.png", imgPos: "center",
-          headline: "Expand your business across Europe.",
-          body: "BLUWX gives companies and brands the chance to showcase and sell their products through a unique network of clubs, coaches and ambassadors. Instead of relying only on traditional distribution channels, your products become visible to thousands of players who trust the recommendations of professionals and their local clubs. With your own dedicated brand page, product catalogue and business dashboard, you can monitor sales, manage products and grow your presence across Europe.",
-          hasChips: true, chips: ["Sell products across Europe", "Dedicated brand page", "Product management dashboard", "Access to clubs, coaches and ambassadors", "Sales analytics and reporting", "New commercial opportunities"],
+          headline: "Expand your business, everywhere.",
+          body: "BLUWX gives companies and brands the chance to showcase and sell their products through a unique network of clubs, coaches and influencers. Instead of relying only on traditional distribution channels, your products become visible to thousands of players who trust the recommendations of professionals and their local clubs. With your own dedicated brand page, product catalogue and business dashboard, you can monitor sales, manage products and grow your presence everywhere.",
+          hasPricing: true,
+          pricingTiers: [
+            { price: "€29,00", desc: "Showcase and sell up to 5 products", annual: "€290,00" },
+            { price: "€39,00", desc: "Showcase and sell up to 10 products", annual: "€390,00" },
+            { price: "€59,00", desc: "Showcase and sell up to 30 products", annual: "€590,00" },
+            { price: "€79,00", desc: "Showcase and sell up to 70 products", annual: "€790,00" },
+          ],
+          hasChips: true, chips: ["Sell products globally", "Dedicated brand page", "Product management dashboard", "Access to clubs, coaches and influencers", "Sales analytics and reporting", "New commercial opportunities"],
           hasTriple: false, triple: [],
         },
         {
@@ -310,40 +433,51 @@ class Component extends DCLogic {
           body: "Create your personal page, select the products you trust and recommend them to your students. When your players buy through your page, you earn commission while helping them choose the right equipment.",
           hasChips: false, chips: [],
           hasTriple: false, triple: [],
+          hasCoachButtons: true,
+          hasFreeNote: true,
         },
         {
-          num: "04", eyebrow: "For ambassadors", revClass: "rev",
+          num: "04", eyebrow: "For influencers", revClass: "rev",
           hasImg: true, img: "uploads/Ambassadors.png", imgPos: "center",
           headline: "Your community becomes your business.",
           body: "Share your favourite products, inspire your followers and grow your personal brand. BLUWX runs the platform while you focus on creating content and connecting with your audience.",
           hasChips: false, chips: [],
           hasTriple: false, triple: [],
+          hasFreeNote: true,
         },
         {
           num: "05", eyebrow: "For players", revClass: "",
-          hasImg: true, img: "uploads/players-home-3.jpg", imgPos: "center",
+          hasImg: true, img: "uploads/players-cover.jpeg", imgPos: "center",
           headline: "Everything you need. One platform.",
-          body: "Discover premium padel products recommended by trusted clubs, coaches and ambassadors. Enjoy exclusive offers, special promotions and easy access to the best padel gear in Europe.",
+          body: "Discover premium padel products recommended by trusted clubs, coaches and influencers. Enjoy exclusive offers, special promotions and easy access to the best padel gear.",
           hasChips: false, chips: [],
           hasTriple: false, triple: [],
+          hasFreeNote: true,
         },
       ],
 
       benefits: [
-        { num: "01", who: "Companies & brands", verb: "Reach new customers.", detail: "Sell across a Europe-wide network of clubs and pros." },
+        { num: "01", who: "Companies & brands", verb: "Reach new customers.", detail: "Sell across a global network of clubs and pros." },
         { num: "02", who: "Clubs", verb: "New revenue streams.", detail: "Earn on every order, with no inventory or risk." },
         { num: "03", who: "Coaches", verb: "Monetize your expertise.", detail: "Recommend the gear you trust and earn commission." },
-        { num: "04", who: "Ambassadors", verb: "Grow your community.", detail: "Turn your audience into your own padel business." },
+        { num: "04", who: "Influencers", verb: "Grow your community.", detail: "Turn your audience into your own padel business." },
         { num: "05", who: "Players", verb: "Buy with confidence.", detail: "Shop gear vouched for by people you already trust." },
       ],
 
-      joinCards: [
-        { tag: "Partner", label: "I'm a Company", href: "JoinForm.dc.html?type=company" },
-        { tag: "Partner", label: "I'm a Brand", href: "JoinForm.dc.html?type=brand" },
-        { tag: "Network", label: "I'm a Club", href: "JoinForm.dc.html?type=club" },
-        { tag: "Network", label: "I'm a Coach", href: "JoinForm.dc.html?type=coach" },
-        { tag: "Network", label: "I'm an Ambassador", href: "JoinForm.dc.html?type=ambassador" },
-        { tag: "Community", label: "I'm a Player", href: "JoinForm.dc.html?type=player" },
+      joinGroups: [
+        { title: "Business", color: "var(--accent)", items: [
+          { tag: "Partner", label: "I'm a Company", href: "JoinForm.dc.html?type=company" },
+          { tag: "Partner", label: "I'm a Brand", href: "JoinForm.dc.html?type=brand" },
+          { tag: "Partner", label: "Facility Builders", href: "JoinForm.dc.html?type=company&reason=court_construction" },
+        ]},
+        { title: "Academies", color: "#E3A857", items: [
+          { tag: "Network", label: "I'm a Club", href: "JoinForm.dc.html?type=club" },
+          { tag: "Network", label: "I'm a Coach", href: "JoinForm.dc.html?type=coach" },
+        ]},
+        { title: "Community", color: "#7C93F0", items: [
+          { tag: "Network", label: "I'm an Influencer", href: "JoinForm.dc.html?type=ambassador" },
+          { tag: "Network", label: "I'm a Player", href: "JoinForm.dc.html?type=player" },
+        ]},
       ],
     };
   }

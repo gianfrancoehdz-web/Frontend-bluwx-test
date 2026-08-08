@@ -7,6 +7,7 @@
 </head>
 <body>
 <x-dc>
+
 <helmet>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -28,6 +29,7 @@
     --dim: #6E6A62; --accent: #26433A; --on-accent: #F6F4EF;
   }
   a:hover { color: var(--accent); }
+  .jf-input::placeholder { color: var(--dim); }
 </style>
 </helmet>
 
@@ -40,46 +42,243 @@
     </div>
   </header>
 
-  <main style="flex:1; display:flex; align-items:center; justify-content:center; padding:clamp(48px,9vw,120px) clamp(16px,4vw,40px);">
-    <div style="max-width:520px; width:100%; text-align:center;">
-      <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.18em; text-transform:uppercase; color:var(--accent);">Join BLUWX</div>
-      <h1 style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:clamp(30px,5vw,48px); line-height:1.02; letter-spacing:-0.03em; margin:16px 0 0; text-wrap:balance;">Join as {{ typeLabel }}</h1>
-      <p style="font-size:16px; line-height:1.62; color:var(--dim); margin:18px 0 0;">This is where the {{ typeLabel }} application form will live. We'll build it in detail next — your selected category is already captured.</p>
+  <main style="flex:1; display:flex; justify-content:center; padding:clamp(40px,8vw,100px) clamp(16px,4vw,40px);">
+    <div style="max-width:640px; width:100%;">
 
-      <div style="display:inline-flex; align-items:center; gap:10px; margin-top:26px; border:1px solid var(--accent); border-radius:999px; padding:11px 20px; background:color-mix(in srgb, var(--accent) 12%, transparent);">
-        <span style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--dim);">Selected</span>
-        <span style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:15px; color:var(--fg);">{{ typeLabel }}</span>
+      <!-- step indicator -->
+      <div style="display:flex; align-items:center; gap:10px; justify-content:center; margin-bottom:clamp(28px,5vw,44px);">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="width:24px; height:24px; border-radius:999px; display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono',monospace; font-size:12px; background:{{ step1Bg }}; color:{{ step1Fg }}; border:1px solid var(--accent);">1</span>
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.06em; text-transform:uppercase; color:{{ step1TextColor }};">Audience</span>
+        </div>
+        <div style="width:36px; height:1px; background:var(--line-strong);"></div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="width:24px; height:24px; border-radius:999px; display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono',monospace; font-size:12px; background:{{ step2Bg }}; color:{{ step2Fg }}; border:1px solid {{ step2Border }};">2</span>
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.06em; text-transform:uppercase; color:{{ step2TextColor }};">{{ step2Label }}</span>
+        </div>
       </div>
 
-      <svg viewBox="0 0 520 20" preserveAspectRatio="none" style="width:100%; height:16px; display:block; margin:34px 0;" aria-hidden="true">
-        <line x1="0" y1="10" x2="520" y2="10" style="stroke:var(--line)" stroke-width="1"/>
-        <line x1="0" y1="2" x2="0" y2="18" style="stroke:var(--accent)" stroke-width="2"/>
-      </svg>
+      <!-- STEP 1 -->
+      <sc-if value="{{ isStep1 }}" hint-placeholder-val="{{ true }}">
+        <div style="text-align:center;">
+          <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.18em; text-transform:uppercase; color:var(--accent);">Join BLUWX</div>
+          <h1 style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:clamp(30px,5vw,46px); line-height:1.02; letter-spacing:-0.03em; margin:16px 0 0; text-wrap:balance;">Who are you?</h1>
+          <p style="font-size:16px; line-height:1.6; color:var(--dim); margin:14px 0 0;">Pick the role that fits you best — you can change it anytime.</p>
+        </div>
 
-      <div style="display:flex; flex-wrap:wrap; gap:12px; justify-content:center;">
-        <a href="HowItWorks.dc.html" style="display:inline-flex; align-items:center; justify-content:center; border:1px solid var(--line-strong); color:var(--fg); font-weight:500; font-size:15px; padding:14px 26px; border-radius:999px;" style-hover="border-color:var(--accent); color:var(--accent);">← Back</a>
-        <a href="index.dc.html" style="display:inline-flex; align-items:center; justify-content:center; background:var(--accent); color:var(--on-accent); font-weight:600; font-size:15px; padding:14px 28px; border-radius:999px;" style-hover="filter:brightness(1.06);">Home</a>
-      </div>
+        <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:clamp(28px,5vw,40px);">
+          <sc-for list="{{ audienceCards }}" as="c" hint-placeholder-count="4">
+            <button onClick="{{ c.select }}" style="display:flex; flex-direction:column; gap:6px; text-align:left; padding:24px 20px; border-radius:16px; border:1px solid {{ c.border }}; background:{{ c.bg }}; cursor:pointer; font-family:inherit;" style-hover="border-color:var(--accent);">
+              <span style="font-size:26px;">{{ c.icon }}</span>
+              <span style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:17px; color:var(--fg);">{{ c.label }}</span>
+              <span style="font-size:13px; color:var(--dim); line-height:1.4;">{{ c.desc }}</span>
+            </button>
+          </sc-for>
+        </div>
+
+        <div style="display:flex; justify-content:center; margin-top:clamp(28px,5vw,40px);">
+          <button onClick="{{ goStep2 }}" style="display:inline-flex; align-items:center; justify-content:center; background:var(--accent); color:var(--on-accent); font-weight:600; font-size:15px; padding:14px 32px; border-radius:999px; border:none; cursor:pointer; font-family:inherit;" style-hover="filter:brightness(1.06);">Continue →</button>
+        </div>
+      </sc-if>
+
+      <!-- STEP 2 -->
+      <sc-if value="{{ isStep2 }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:16px;">
+          <sc-if value="{{ showBackButton }}" hint-placeholder-val="{{ true }}">
+            <button onClick="{{ backToStep1 }}" style="display:inline-flex; align-items:center; gap:6px; flex-shrink:0; background:var(--panel); border:1px solid var(--line-strong); border-radius:999px; cursor:pointer; font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.04em; color:var(--fg); padding:10px 16px;" style-hover="border-color:var(--accent); color:var(--accent);">← Back</button>
+          </sc-if>
+          <div style="text-align:center; flex:1;">
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.18em; text-transform:uppercase; color:var(--accent);">{{ step2Eyebrow }}</div>
+            <h1 style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:clamp(28px,5vw,42px); line-height:1.05; letter-spacing:-0.03em; margin:16px 0 0; text-wrap:balance;">{{ step2Title }}</h1>
+          </div>
+          <span style="flex-shrink:0; width:76px;"></span>
+        </div>
+
+        <!-- BUSINESS INQUIRY FORM -->
+        <sc-if value="{{ isBusiness }}" hint-placeholder-val="{{ false }}">
+          <form onSubmit="{{ submitInquiry }}" style="display:flex; flex-direction:column; gap:16px; margin-top:clamp(28px,5vw,40px); background:var(--panel); border:1px solid var(--line); border-radius:20px; padding:clamp(22px,4vw,32px);">
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <label style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--dim);">{{ inquiryNameLabel }}</label>
+              <input type="text" placeholder="{{ inquiryNamePlaceholder }}" class="jf-input" style="background:var(--bg); border:1px solid var(--line-strong); border-radius:10px; padding:13px 14px; color:var(--fg); font-size:15px; font-family:inherit;">
+            </div>
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <label style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--dim);">Contact name</label>
+              <input type="text" placeholder="Jane Doe" class="jf-input" style="background:var(--bg); border:1px solid var(--line-strong); border-radius:10px; padding:13px 14px; color:var(--fg); font-size:15px; font-family:inherit;">
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+              <div style="display:flex; flex-direction:column; gap:6px;">
+                <label style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--dim);">Email</label>
+                <input type="email" placeholder="jane@company.com" class="jf-input" style="background:var(--bg); border:1px solid var(--line-strong); border-radius:10px; padding:13px 14px; color:var(--fg); font-size:15px; font-family:inherit;">
+              </div>
+              <div style="display:flex; flex-direction:column; gap:6px;">
+                <label style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--dim);">Phone (optional)</label>
+                <input type="tel" placeholder="+34 600 000 000" class="jf-input" style="background:var(--bg); border:1px solid var(--line-strong); border-radius:10px; padding:13px 14px; color:var(--fg); font-size:15px; font-family:inherit;">
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <label style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--dim);">Reason for inquiry</label>
+              <select value="{{ reasonValue }}" onChange="{{ setReason }}" class="jf-input" style="background:var(--bg); border:1px solid var(--line-strong); border-radius:10px; padding:13px 14px; color:var(--fg); font-size:15px; font-family:inherit;">
+                <option value="sell">I have a store and want to sell with you</option>
+                <option value="tournament">I want to organize a tournament</option>
+                <option value="sponsor">I want to sponsor the platform</option>
+                <option value="court_construction">Court Construction Inquiry</option>
+                <option value="other">Other type of request</option>
+              </select>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <label style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--dim);">Message</label>
+              <textarea rows="5" placeholder="Tell us more about your request…" class="jf-input" style="background:var(--bg); border:1px solid var(--line-strong); border-radius:10px; padding:13px 14px; color:var(--fg); font-size:15px; font-family:inherit; resize:vertical;"></textarea>
+            </div>
+            <button type="submit" style="display:inline-flex; align-items:center; justify-content:center; background:var(--accent); color:var(--on-accent); font-weight:600; font-size:15px; padding:15px 28px; border-radius:999px; border:none; cursor:pointer; font-family:inherit; margin-top:8px;" style-hover="filter:brightness(1.06);">Send inquiry</button>
+          </form>
+        </sc-if>
+
+        <!-- STANDARD ACCOUNT FORM -->
+        <sc-if value="{{ isAccountForm }}" hint-placeholder-val="{{ true }}">
+        <form onSubmit="{{ noop }}" style="display:flex; flex-direction:column; gap:16px; margin-top:clamp(28px,5vw,40px); background:var(--panel); border:1px solid var(--line); border-radius:20px; padding:clamp(22px,4vw,32px);">
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <label style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--dim);">Full name</label>
+            <input type="text" placeholder="Jane Doe" class="jf-input" style="background:var(--bg); border:1px solid var(--line-strong); border-radius:10px; padding:13px 14px; color:var(--fg); font-size:15px; font-family:inherit;">
+          </div>
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <label style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--dim);">Email</label>
+            <input type="email" placeholder="jane@email.com" class="jf-input" style="background:var(--bg); border:1px solid var(--line-strong); border-radius:10px; padding:13px 14px; color:var(--fg); font-size:15px; font-family:inherit;">
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <label style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--dim);">Password</label>
+              <input type="password" placeholder="••••••••" class="jf-input" style="background:var(--bg); border:1px solid var(--line-strong); border-radius:10px; padding:13px 14px; color:var(--fg); font-size:15px; font-family:inherit;">
+            </div>
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <label style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--dim);">Confirm password</label>
+              <input type="password" placeholder="••••••••" class="jf-input" style="background:var(--bg); border:1px solid var(--line-strong); border-radius:10px; padding:13px 14px; color:var(--fg); font-size:15px; font-family:inherit;">
+            </div>
+          </div>
+
+          <sc-if value="{{ extraField }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <label style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--dim);">{{ extraField.label }}</label>
+              <input type="text" placeholder="{{ extraField.placeholder }}" class="jf-input" style="background:var(--bg); border:1px solid var(--line-strong); border-radius:10px; padding:13px 14px; color:var(--fg); font-size:15px; font-family:inherit;">
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ extraField2 }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <label style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--dim);">{{ extraField2.label }}</label>
+              <input type="text" placeholder="{{ extraField2.placeholder }}" class="jf-input" style="background:var(--bg); border:1px solid var(--line-strong); border-radius:10px; padding:13px 14px; color:var(--fg); font-size:15px; font-family:inherit;">
+            </div>
+          </sc-if>
+
+          <label style="display:flex; align-items:flex-start; gap:10px; margin-top:6px; font-size:13px; line-height:1.5; color:var(--dim); cursor:pointer;">
+            <input type="checkbox" style="margin-top:2px; accent-color:var(--accent);">
+            <span>I agree to the Terms of Service and Privacy Policy.</span>
+          </label>
+
+          <button type="submit" style="display:inline-flex; align-items:center; justify-content:center; background:var(--accent); color:var(--on-accent); font-weight:600; font-size:15px; padding:15px 28px; border-radius:999px; border:none; cursor:pointer; font-family:inherit; margin-top:8px;" style-hover="filter:brightness(1.06);">Create account</button>
+        </form>
+        </sc-if>
+      </sc-if>
+
     </div>
   </main>
 
+  <!-- SUCCESS MODAL -->
+  <sc-if value="{{ showSuccess }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed; inset:0; z-index:100; background:rgba(14,13,11,0.72); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; padding:20px;">
+      <div style="max-width:420px; width:100%; background:var(--panel); border:1px solid var(--line-strong); border-radius:22px; padding:clamp(28px,5vw,40px); text-align:center;">
+        <div style="width:64px; height:64px; margin:0 auto; border-radius:999px; background:var(--accent); display:flex; align-items:center; justify-content:center;">
+          <svg width="32" height="32" viewBox="0 0 52 52" fill="none" aria-hidden="true">
+            <path d="M14 27 L23 36 L39 18" stroke="var(--on-accent)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h2 style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:24px; letter-spacing:-0.01em; margin:20px 0 0;">Thank you for reaching out!</h2>
+        <p style="font-size:15px; line-height:1.6; color:var(--dim); margin:12px 0 0;">We've received your message and our team will get back to you shortly.</p>
+        <button onClick="{{ closeSuccess }}" style="display:inline-flex; align-items:center; justify-content:center; background:var(--accent); color:var(--on-accent); font-weight:600; font-size:15px; padding:13px 30px; border-radius:999px; border:none; cursor:pointer; font-family:inherit; margin-top:24px;" style-hover="filter:brightness(1.06);">Back to Home</button>
+      </div>
+    </div>
+  </sc-if>
+
 </div>
+
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="">
-const LABELS = { company: "a Company", brand: "a Brand", club: "a Club", coach: "a Coach", ambassador: "an Ambassador", player: "a Player" };
+<script type="text/x-dc" data-dc-script>
+const LABELS = { club: "Club", coach: "Coach", ambassador: "Influencer", player: "Player" };
+const ICONS = { club: "🏟", coach: "🎓", ambassador: "★", player: "🎾" };
+const DESCS = {
+  club: "List your club, courts and coaches.",
+  coach: "Offer lessons and grow your roster.",
+  ambassador: "Represent BLUWX in your community as an influencer.",
+  player: "Book courts, coaches and gear.",
+};
+const EXTRA = {
+  club: [{ label: "Club name", placeholder: "Padel Paris Est" }, { label: "City", placeholder: "Paris" }],
+  coach: [{ label: "Home club / academy", placeholder: "e.g. Alicante Padel Academy" }],
+  ambassador: [{ label: "Instagram handle", placeholder: "@yourhandle" }],
+  player: [],
+};
+const BIZ_LABELS = { company: "Company", brand: "Brand" };
 
 class Component extends DCLogic {
-  state = { theme: "dark", type: "player" };
+  state = { theme: "dark", step: 1, type: null, showSuccess: false, reason: "sell" };
+
   componentDidMount() {
-    let t = "player";
-    try { t = new URLSearchParams(location.search).get("type") || "player"; } catch (e) {}
-    if (!LABELS[t]) t = "player";
-    this.setState({ type: t });
+    let t = null, r = null;
+    try { const q = new URLSearchParams(location.search); t = q.get("type"); r = q.get("reason"); } catch (e) {}
+    if (t && BIZ_LABELS[t]) this.setState({ type: t, step: 2 });
+    else if (t && LABELS[t]) this.setState({ type: t });
+    if (r) this.setState({ reason: r });
   }
+
   renderVals() {
-    return { theme: this.state.theme, typeLabel: LABELS[this.state.type] || "a Player" };
+    const s = this.state;
+    const step1 = s.step === 1;
+    const isBusiness = s.type === "company" || s.type === "brand";
+    const extras = EXTRA[s.type] || [];
+
+    return {
+      theme: s.theme,
+      isStep1: step1,
+      isStep2: !step1,
+      isBusiness,
+      isAccountForm: !isBusiness,
+      showBackButton: !isBusiness,
+      typeLabel: LABELS[s.type] || "Member",
+      step2Eyebrow: isBusiness ? ("Join as " + BIZ_LABELS[s.type]) : ("Join as " + (LABELS[s.type] || "Member")),
+      step2Title: isBusiness ? "Tell us about your business" : "Create your account",
+      step2Label: isBusiness ? "Inquiry" : "Account",
+      inquiryNameLabel: s.type === "brand" ? "Brand name" : "Company name",
+      inquiryNamePlaceholder: s.type === "brand" ? "Your brand" : "Your company",
+      reasonValue: s.reason,
+      setReason: (e) => this.setState({ reason: e.target.value }),
+      noop: (e) => e.preventDefault(),
+      submitInquiry: (e) => { e.preventDefault(); this.setState({ showSuccess: true }); },
+      closeSuccess: () => { window.location.href = "index.dc.html"; },
+
+      step1Bg: step1 ? "var(--accent)" : "transparent",
+      step1Fg: step1 ? "var(--on-accent)" : "var(--accent)",
+      step1TextColor: step1 ? "var(--fg)" : "var(--dim)",
+      step2Bg: !step1 ? "var(--accent)" : "transparent",
+      step2Fg: !step1 ? "var(--on-accent)" : "var(--dim)",
+      step2Border: !step1 ? "var(--accent)" : "var(--line-strong)",
+      step2TextColor: !step1 ? "var(--fg)" : "var(--dim)",
+
+      audienceCards: Object.keys(LABELS).map(key => ({
+        label: LABELS[key], icon: ICONS[key], desc: DESCS[key],
+        border: s.type === key ? "var(--accent)" : "var(--line)",
+        bg: s.type === key ? "color-mix(in srgb, var(--accent) 12%, transparent)" : "var(--panel)",
+        select: () => this.setState({ type: key }),
+      })),
+
+      goStep2: () => { if (s.type) this.setState({ step: 2 }); },
+      backToStep1: () => this.setState({ step: 1 }),
+
+      extraField: extras[0] || null,
+      extraField2: extras[1] || null,
+      showSuccess: s.showSuccess,
+    };
   }
 }
+
 </script>
 </body>
 </html>

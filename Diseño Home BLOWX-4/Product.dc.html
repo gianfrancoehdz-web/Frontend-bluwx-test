@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="./cart-store.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { background: #161512; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; text-decoration: none; transition: color .18s ease; }
+  ::selection { background: #57B98D; color: #161512; }
+  .pd-body {
+    --bg: #161512; --fg: #F6F4EF; --panel: #201F1B;
+    --line: rgba(246,244,239,0.16); --line-strong: rgba(246,244,239,0.30);
+    --dim: #A79C8C; --accent: #57B98D; --on-accent: #0E1A15; --alert: #D69A4E;
+  }
+  .pd-body[data-theme="light"] {
+    --bg: #F6F4EF; --fg: #161512; --panel: #ECE8E0;
+    --line: #C9C1B4; --line-strong: #A79C8C;
+    --dim: #6E6A62; --accent: #26433A; --on-accent: #F6F4EF; --alert: #B26B1E;
+  }
+  a:hover { color: var(--accent); }
+  .pd-grid { display: grid; grid-template-columns: 1fr; gap: clamp(24px,4vw,56px); }
+  .pd-thumbs { display: flex; flex-direction: row; gap: 10px; }
+  @media (min-width: 900px) {
+    .pd-grid { grid-template-columns: 1.05fr 0.95fr; align-items: start; }
+    .pd-info { position: sticky; top: 96px; }
+  }
+  @keyframes pd-cartpop { 0%{transform:scale(1);} 40%{transform:scale(1.5);} 100%{transform:scale(1);} }
+  @keyframes pd-toastin { 0%{opacity:0; transform:translateY(14px) scale(.96);} 100%{opacity:1; transform:translateY(0) scale(1);} }
+  .pd-cart-pop { animation: pd-cartpop .5s cubic-bezier(.34,1.56,.64,1); }
+  .pd-swatch { transition: border-color .16s, color .16s, background .16s; }
+</style>
+</helmet>
+
+<div class="pd-body" data-theme="{{ theme }}" style="font-family:'Inter',sans-serif; min-height:100vh; background:var(--bg); color:var(--fg); transition:background .25s, color .25s;">
+
+  <!-- ===== HEADER ===== -->
+  <header style="position:sticky; top:0; z-index:40; background:color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter:blur(12px); border-bottom:1px solid var(--line);">
+    <div style="max-width:1280px; margin:0 auto; padding:0 clamp(16px,4vw,40px); height:64px; display:flex; align-items:center; justify-content:space-between; gap:20px;">
+      <a href="index.dc.html" style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:22px; letter-spacing:0.14em; color:var(--fg);">BLU<span style="color:var(--accent);">WX</span></a>
+      <div style="display:flex; align-items:center; gap:16px;">
+        <a href="Cart.dc.html" style="font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.06em; color:var(--fg); display:inline-flex; align-items:center; gap:6px;">CART<span ref="{{ cartBadgeRef }}" style="display:inline-flex; align-items:center; justify-content:center; min-width:18px; height:18px; padding:0 5px; background:var(--accent); color:var(--on-accent); border-radius:9px; font-size:10px;">{{ cartCount }}</span></a>
+        <button onClick="{{ toggleTheme }}" aria-label="Toggle theme" style="border:1px solid var(--line-strong); background:transparent; color:var(--fg); font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.06em; padding:7px 12px; cursor:pointer; border-radius:999px;" style-hover="border-color:var(--accent); color:var(--accent);">{{ themeLabel }}</button>
+      </div>
+    </div>
+  </header>
+
+  <main style="max-width:1280px; margin:0 auto; padding:clamp(20px,3vw,32px) clamp(16px,4vw,40px) clamp(56px,7vw,96px);">
+
+    <!-- breadcrumb -->
+    <nav style="font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.06em; color:var(--dim); margin-bottom:clamp(20px,3vw,32px);">
+      <a href="index.dc.html" style="color:var(--dim);" style-hover="color:var(--accent);">Home</a>
+      <span style="margin:0 8px; color:var(--line-strong);">/</span>
+      <a href="Shop.dc.html" style="color:var(--dim);" style-hover="color:var(--accent);">Shop</a>
+      <span style="margin:0 8px; color:var(--line-strong);">/</span>
+      <span style="color:var(--fg);">{{ name }}</span>
+    </nav>
+
+    <div class="pd-grid">
+
+      <!-- ===== GALLERY ===== -->
+      <div>
+        <div style="position:relative; aspect-ratio:1/1; overflow:hidden; border:1px solid var(--line); border-radius:22px; background:#f4f4f1;">
+          <img src="{{ activeImg }}" alt="{{ name }}" style="position:absolute; inset:0; width:100%; height:100%; object-fit:contain; padding:clamp(24px,5vw,64px);"/>
+          <span style="position:absolute; top:16px; left:16px; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.06em; color:#77776f;">{{ catLabel }}</span>
+          <sc-if value="{{ showTag }}" hint-placeholder-val="{{ false }}">
+            <span style="position:absolute; top:16px; right:16px; font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.06em; text-transform:uppercase; padding:5px 10px; border-radius:999px; background:#fff; color:{{ tagColor }}; border:1px solid {{ tagColor }};">{{ tag }}</span>
+          </sc-if>
+        </div>
+        <!-- thumbnails -->
+        <div class="pd-thumbs" style="margin-top:12px;">
+          <sc-for list="{{ gallery }}" as="g" hint-placeholder-count="2">
+            <button onClick="{{ g.select }}" style="flex:none; width:76px; height:76px; padding:8px; border:1px solid {{ g.border }}; border-radius:14px; background:#f4f4f1; cursor:pointer;">
+              <img src="{{ g.img }}" alt="" style="width:100%; height:100%; object-fit:contain;"/>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+
+      <!-- ===== INFO / BUY BOX ===== -->
+      <div class="pd-info">
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--accent);">{{ brand }}</div>
+        <h1 style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:clamp(30px,4.5vw,46px); line-height:1.02; letter-spacing:-0.025em; margin:10px 0 0; text-wrap:balance;">{{ name }}</h1>
+
+        <div style="display:flex; align-items:baseline; gap:12px; margin-top:16px;">
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:clamp(26px,3.5vw,34px); color:var(--fg);">{{ priceLabel }}</span>
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--dim);">VAT incl.</span>
+        </div>
+
+        <p style="font-size:15px; line-height:1.6; color:var(--dim); margin:20px 0 0; max-width:46ch; text-wrap:pretty;">{{ description }}</p>
+
+        <!-- court-line divider -->
+        <svg viewBox="0 0 1200 30" preserveAspectRatio="none" style="width:100%; height:20px; display:block; margin:26px 0;" aria-hidden="true">
+          <line x1="0" y1="15" x2="1200" y2="15" style="stroke:var(--line-strong)" stroke-width="1"/>
+          <line x1="0" y1="4" x2="0" y2="26" style="stroke:var(--accent)" stroke-width="2"/>
+        </svg>
+
+        <!-- VARIANT SELECTOR -->
+        <sc-if value="{{ hasVariants }}" hint-placeholder-val="{{ true }}">
+          <div style="margin-bottom:24px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+              <span style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--dim);">{{ variantLabel }}</span>
+              <span style="font-family:'Inter',sans-serif; font-size:13px; color:var(--fg);">{{ activeVariantLabel }}</span>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:10px;">
+              <sc-for list="{{ variantOptions }}" as="v" hint-placeholder-count="4">
+                <button class="pd-swatch" onClick="{{ v.select }}" style="min-width:52px; padding:11px 16px; border:1px solid {{ v.border }}; background:{{ v.bg }}; color:{{ v.color }}; border-radius:999px; cursor:pointer; font-family:'IBM Plex Mono',monospace; font-size:13px; letter-spacing:0.04em;">{{ v.label }}</button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- QUANTITY + ADD -->
+        <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:stretch;">
+          <div style="display:flex; align-items:center; border:1px solid var(--line-strong); border-radius:999px; overflow:hidden;">
+            <button onClick="{{ dec }}" aria-label="Decrease" style="width:46px; height:52px; background:transparent; border:none; color:var(--fg); font-size:20px; cursor:pointer;">−</button>
+            <span style="min-width:38px; text-align:center; font-family:'IBM Plex Mono',monospace; font-size:16px;">{{ qty }}</span>
+            <button onClick="{{ inc }}" aria-label="Increase" style="width:46px; height:52px; background:transparent; border:none; color:var(--fg); font-size:20px; cursor:pointer;">+</button>
+          </div>
+          <button onClick="{{ addToCart }}" style="flex:1; min-width:200px; height:52px; background:var(--accent); color:var(--on-accent); border:none; border-radius:999px; cursor:pointer; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:16px; letter-spacing:0.01em;" style-hover="filter:brightness(1.06);">Add to Cart · {{ lineTotalLabel }}</button>
+        </div>
+
+        <!-- reassurance chips -->
+        <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:22px;">
+          <sc-for list="{{ perks }}" as="perk" hint-placeholder-count="3">
+            <span style="display:inline-flex; align-items:center; gap:7px; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.03em; color:var(--dim); border:1px solid var(--line); border-radius:999px; padding:7px 13px;">
+              <span style="color:var(--accent);">✦</span>{{ perk }}
+            </span>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ===== TOAST ===== -->
+  <sc-if value="{{ toastOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed; left:50%; bottom:24px; transform:translateX(-50%); z-index:80; max-width:calc(100vw - 32px);">
+      <div class="pd-cart-pop" style="display:flex; align-items:center; gap:14px; background:var(--panel); border:1px solid var(--accent); border-radius:16px; padding:12px 16px; box-shadow:0 18px 42px rgba(0,0,0,0.4); animation:pd-toastin .32s cubic-bezier(.34,1.4,.64,1);">
+        <span style="display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:999px; background:var(--accent); color:var(--on-accent); font-size:17px; flex:none;">✓</span>
+        <div style="min-width:0;">
+          <div style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:14px;">Added to cart</div>
+          <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ toastText }}</div>
+        </div>
+        <a href="Cart.dc.html" style="flex:none; font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.04em; color:var(--accent); border:1px solid var(--accent); border-radius:999px; padding:8px 14px;" style-hover="background:var(--accent); color:var(--on-accent);">VIEW CART →</a>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;productId&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;ronin&quot;,&quot;options&quot;:[&quot;ronin&quot;,&quot;bag&quot;,&quot;tshirt&quot;,&quot;shorts&quot;,&quot;socks&quot;,&quot;balls&quot;],&quot;tsType&quot;:&quot;string&quot;}}">
+const euro = (n) => "€" + n.toFixed(2).replace(".", ",");
+
+// Full product records with variant configs. Model variants can swap image + price.
+const CATALOG = {
+  ronin: {
+    name: "RONIN V1 2026", brand: "NeuronPadel", cat: "Rackets", price: 230, stock: "in",
+    description: "Carbon-fibre diamond-shape frame built for aggressive attacking play. EVA soft-core for a forgiving sweet spot and controlled power on every smash.",
+    gallery: ["uploads/neuronpadel  RONIN v1-1.webp", "uploads/np-ronin-v1.webp"],
+    variant: {
+      label: "Model", type: "model",
+      options: [
+        { value: "onyx", label: "Onyx", price: 230, img: "uploads/neuronpadel  RONIN v1-1.webp", gallery: ["uploads/neuronpadel  RONIN v1-1.webp", "uploads/np-ronin-v1.webp"] },
+        { value: "sakura", label: "Sakura", price: 250, img: "uploads/neuronpadel  RONIN v1 SAKURA EDITION-1.webp", gallery: ["uploads/neuronpadel  RONIN v1 SAKURA EDITION-1.webp", "uploads/np-ronin-sakura.webp"] },
+      ],
+    },
+    perks: ["Free EU shipping", "2-year warranty", "Ships in 24h"],
+  },
+  bag: {
+    name: "Performance Pro+ Player Bag", brand: "NeuronPadel", cat: "Padel Bags", price: 125, stock: "in",
+    description: "Thermal-lined racket compartment for up to 3 paddles, ventilated shoe pocket and padded straps. The tour bag for players who travel to win.",
+    gallery: ["uploads/neuronpadel PERFORMANCE PRO+ PLAYER BAG.webp", "uploads/np-player-bag.webp"],
+    variant: null,
+    perks: ["Free EU shipping", "2-year warranty", "Ships in 24h"],
+  },
+  tshirt: {
+    name: "Performance T-Shirt", brand: "NeuronPadel", cat: "Apparel", price: 25.5, stock: "in",
+    description: "Lightweight moisture-wicking jersey with four-way stretch. Keeps you dry through the third set, cut for full range of motion.",
+    gallery: ["uploads/PERFORMANCE T-SHIRT.webp", "uploads/np-tshirt.webp"],
+    variant: { label: "Size", type: "size", options: ["XS","S","M","L","XL","XXL"].map(s => ({ value: s, label: s })) },
+    perks: ["Free EU shipping", "Free 30-day returns", "Ships in 24h"],
+  },
+  shorts: {
+    name: "Pro+ Shorts", brand: "NeuronPadel", cat: "Apparel", price: 25.5, stock: "in",
+    description: "Quick-dry shorts with zip ball pocket and elasticated waist. Engineered for lateral movement and long rallies.",
+    gallery: ["uploads/PRO+ SHORTS.webp", "uploads/np-shorts.webp"],
+    variant: { label: "Size", type: "size", options: ["XS","S","M","L","XL","XXL"].map(s => ({ value: s, label: s })) },
+    perks: ["Free EU shipping", "Free 30-day returns", "Ships in 24h"],
+  },
+  socks: {
+    name: "Performance Padel Socks", brand: "NeuronPadel", cat: "Accessories", price: 9, stock: "in",
+    description: "Cushioned high-density sole with arch compression and a breathable mesh instep. Sold as a single pair.",
+    gallery: ["uploads/PERFORMANCE PADEL SOCKS.webp", "uploads/np-socks.webp"],
+    variant: { label: "Size", type: "size", options: [{value:"S",label:"S · 35-38"},{value:"M",label:"M · 39-42"},{value:"L",label:"L · 43-46"}] },
+    perks: ["Free EU shipping", "Free 30-day returns", "Ships in 24h"],
+  },
+  balls: {
+    name: "Pro+ Balls · Box of 24", brand: "NeuronPadel", cat: "Balls", price: 7, stock: "in",
+    description: "High-pressure felt balls with consistent bounce and durable core. One box holds 8 tubes of 3, enough for a full season of matches.",
+    gallery: ["uploads/PRO+ BALLS.webp", "uploads/np-balls.webp"],
+    variant: null,
+    perks: ["Free EU shipping", "Bulk pricing available", "Ships in 24h"],
+  },
+};
+
+class Component extends DCLogic {
+  state = { theme: "dark", productId: null, variant: null, qty: 1, imgIdx: 0, cartCount: 0, toast: null };
+
+  componentDidMount() {
+    const hash = (typeof location !== "undefined" ? location.hash.replace("#", "") : "");
+    const id = (hash && CATALOG[hash]) ? hash
+      : (this.props.productId && CATALOG[this.props.productId]) ? this.props.productId : "ronin";
+    const prod = CATALOG[id];
+    const firstVariant = prod.variant ? prod.variant.options[0].value : null;
+    this.setState({ productId: id, variant: firstVariant, cartCount: window.CartStore ? window.CartStore.count() : 0 });
+    this._off = window.CartStore ? window.CartStore.onChange(() => this.setState({ cartCount: window.CartStore.count() })) : null;
+  }
+  componentWillUnmount() { if (this._off) this._off(); if (this._toastT) clearTimeout(this._toastT); }
+
+  _prod() { return CATALOG[this.state.productId] || CATALOG.ronin; }
+  _activeOpt() {
+    const p = this._prod();
+    if (!p.variant) return null;
+    return p.variant.options.find(o => o.value === this.state.variant) || p.variant.options[0];
+  }
+  _price() {
+    const opt = this._activeOpt();
+    return (opt && opt.price != null) ? opt.price : this._prod().price;
+  }
+  _gallery() {
+    const opt = this._activeOpt();
+    if (opt && opt.gallery) return opt.gallery;
+    return this._prod().gallery;
+  }
+
+  renderVals() {
+    const s = this.state;
+    if (!s.productId) return {};
+    const p = this._prod(), opt = this._activeOpt();
+    const price = this._price(), gallery = this._gallery();
+    const accent = "var(--accent)", line = "var(--line)", fg = "var(--fg)", dim = "var(--dim)", alert = "var(--alert)";
+    const imgIdx = Math.min(s.imgIdx, gallery.length - 1);
+    const variantStr = opt ? opt.label : "";
+
+    const tag = p.stock === "low" ? { showTag: true, tag: "Low stock", tagColor: alert }
+      : p.stock === "out" ? { showTag: true, tag: "Sold out", tagColor: dim }
+      : { showTag: false, tag: "", tagColor: dim };
+
+    return {
+      theme: s.theme,
+      themeLabel: s.theme === "dark" ? "LIGHT ☀" : "DARK ☾",
+      toggleTheme: () => this.setState(st => ({ theme: st.theme === "dark" ? "light" : "dark" })),
+
+      cartCount: s.cartCount,
+      cartBadgeRef: (el) => { this._badge = el; },
+
+      name: p.name, brand: p.brand, catLabel: p.cat.toUpperCase(),
+      description: p.description,
+      priceLabel: euro(price),
+      ...tag,
+
+      activeImg: gallery[imgIdx],
+      gallery: gallery.map((img, i) => ({ img, border: i === imgIdx ? accent : line, select: () => this.setState({ imgIdx: i }) })),
+
+      hasVariants: !!p.variant,
+      variantLabel: p.variant ? p.variant.label : "",
+      activeVariantLabel: variantStr,
+      variantOptions: p.variant ? p.variant.options.map(o => {
+        const on = o.value === s.variant;
+        return { label: o.label, border: on ? accent : line, bg: on ? accent : "transparent", color: on ? "var(--on-accent)" : fg,
+                 select: () => this.setState({ variant: o.value, imgIdx: 0 }) };
+      }) : [],
+
+      qty: s.qty,
+      inc: () => this.setState(st => ({ qty: st.qty + 1 })),
+      dec: () => this.setState(st => ({ qty: Math.max(1, st.qty - 1) })),
+      lineTotalLabel: euro(price * s.qty),
+
+      perks: p.perks,
+
+      addToCart: () => {
+        if (!window.CartStore) return;
+        window.CartStore.add({ name: p.name, brand: p.brand, variant: opt ? opt.value : "",
+          variantLabel: opt ? (p.variant.label + ": " + opt.label) : "", price, img: gallery[0] }, s.qty);
+        if (this._badge) { this._badge.classList.remove("pd-cart-pop"); void this._badge.offsetWidth; this._badge.classList.add("pd-cart-pop"); }
+        const label = p.name + (opt ? " · " + opt.label : "") + " × " + s.qty;
+        this.setState({ toast: label });
+        if (this._toastT) clearTimeout(this._toastT);
+        this._toastT = setTimeout(() => this.setState({ toast: null }), 3200);
+      },
+      toastOpen: !!s.toast,
+      toastText: s.toast || "",
+    };
+  }
+}
+</script>
+</body>
+</html>

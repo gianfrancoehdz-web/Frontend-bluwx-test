@@ -37,6 +37,13 @@
   .shop-scrim { display: none; position: fixed; inset: 0; z-index: 55; background: rgba(0,0,0,0.5); }
   .shop-body[data-filter="open"] .shop-aside { transform: none; }
   .shop-body[data-filter="open"] .shop-scrim { display: block; }
+  .shop-navlinks { display: none; }
+  .shop-menubtn { display: inline-flex; }
+  @media (min-width: 880px) {
+    .shop-navlinks { display: flex; }
+    .shop-menubtn { display: none; }
+    .shop-mobilemenu { display: none !important; }
+  }
   .shop-banner { aspect-ratio: 16 / 10; }
   .shop-banner-content { padding: clamp(20px,5vw,40px); max-width: 100%; }
   .shop-banner-logo { height: 72px; }
@@ -58,22 +65,55 @@
 </style>
 </helmet>
 
-<div class="shop-body" data-theme="{{ theme }}" data-filter="{{ filterState }}" style="font-family:'Inter',sans-serif; min-height:100vh; background:var(--bg); color:var(--fg); transition:background .25s, color .25s;">
+<div class="shop-body" data-theme="{{ theme }}" data-filter="{{ filterState }}" style="font-family:'Inter',sans-serif; min-height:100vh; background:var(--bg); color:var(--fg); padding-top:clamp(78px,9vw,108px); transition:background .25s, color .25s;">
 
   <!-- ===== FIXED · HEADER ===== -->
-  <header style="position:sticky; top:0; z-index:40; background:color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter:blur(12px); border-bottom:1px solid var(--line);">
-    <div style="max-width:1280px; margin:0 auto; padding:0 clamp(16px,4vw,40px); height:64px; display:flex; align-items:center; justify-content:space-between; gap:20px;">
-      <a href="index.dc.html" style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:22px; letter-spacing:0.14em; color:var(--fg);">BLU<span style="color:var(--accent);">WX</span></a>
-      <div style="display:flex; align-items:center; gap:16px;">
+  <!-- ===== FIXED · HEADER ===== -->
+  <header style="{{ headerStyle }}">
+    <div style="{{ headerInnerStyle }}">
+      <a href="index.dc.html" style="{{ logoStyle }}">BLU<span style="color:var(--accent);">WX</span></a>
+      <nav class="shop-navlinks" style="{{ navStyle }}">
+        <sc-for list="{{ navItems }}" as="link" hint-placeholder-count="5">
+          <a href="{{ link.href }}" style="padding:4px 0; color:{{ link.color }}; transition:color .18s;" style-hover="color:var(--accent);">{{ link.label }}</a>
+        </sc-for>
+      </nav>
+      <div style="{{ rightGroupStyle }}">
+        <div style="{{ langWrapStyle }}">
+          <button onClick="{{ toggleLang }}" aria-label="Language" style="border:1px solid var(--line-strong); background:transparent; color:var(--fg); font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.06em; padding:7px 11px; cursor:pointer; border-radius:999px; display:inline-flex; align-items:center; gap:7px; transition:border-color .2s, color .2s;" style-hover="border-color:var(--accent); color:var(--accent);">
+            <span style="font-size:14px; line-height:1;">{{ currentLang.flag }}</span>
+            <span>{{ currentLang.code }}</span>
+            <span style="opacity:0.6; font-size:9px;">▾</span>
+          </button>
+          <sc-if value="{{ langOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute; top:calc(100% + 8px); right:0; z-index:60; min-width:168px; background:var(--bg); border:1px solid var(--line-strong); border-radius:14px; padding:6px; box-shadow:0 16px 40px rgba(0,0,0,0.4);">
+              <sc-for list="{{ langs }}" as="lang" hint-placeholder-count="5">
+                <button onClick="{{ lang.select }}" style="width:100%; display:flex; align-items:center; gap:10px; background:transparent; border:none; cursor:pointer; text-align:left; padding:9px 12px; border-radius:9px; font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.04em; color:{{ lang.color }}; transition:background .15s;" style-hover="background:var(--panel);">
+                  <span style="font-size:16px; line-height:1;">{{ lang.flag }}</span>
+                  <span>{{ lang.label }}</span>
+                </button>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+        <button onClick="{{ toggleTheme }}" aria-label="Toggle theme" style="{{ themeBtnStyle }}" style-hover="border-color:var(--accent); color:var(--accent);">{{ themeLabel }}</button>
         <a href="Cart.dc.html" style="font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.06em; color:var(--fg); display:inline-flex; align-items:center; gap:6px;">CART<span style="display:inline-flex; align-items:center; justify-content:center; min-width:18px; height:18px; padding:0 5px; background:var(--accent); color:var(--on-accent); border-radius:9px; font-size:10px;">{{ cartCount }}</span></a>
-        <button onClick="{{ toggleTheme }}" aria-label="Toggle theme" style="border:1px solid var(--line-strong); background:transparent; color:var(--fg); font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.06em; padding:7px 12px; cursor:pointer; border-radius:999px;" style-hover="border-color:var(--accent); color:var(--accent);">{{ themeLabel }}</button>
+        <button class="shop-menubtn" onClick="{{ toggleMenu }}" aria-label="Menu" style="border:1px solid var(--fg); background:transparent; width:40px; height:36px; align-items:center; justify-content:center; cursor:pointer; padding:0; border-radius:12px;">
+          <div style="width:16px; height:1.5px; background:var(--fg); box-shadow:0 5px 0 var(--fg), 0 -5px 0 var(--fg);"></div>
+        </button>
       </div>
     </div>
+    <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+      <div class="shop-mobilemenu" style="border-top:1px solid var(--line); background:var(--bg); border-radius:0 0 24px 24px; padding:8px clamp(16px,4vw,40px) 20px;">
+        <sc-for list="{{ navItems }}" as="link" hint-placeholder-count="5">
+          <a href="{{ link.href }}" style="display:block; padding:13px 0; font-family:'Space Grotesk',sans-serif; font-size:19px; font-weight:500; color:{{ link.color }}; border-bottom:1px solid var(--line); transition:color .18s;" style-hover="color:var(--accent);">{{ link.label }}</a>
+        </sc-for>
+      </div>
+    </sc-if>
   </header>
 
   <!-- ===== FUNCTIONAL · PARTNER ATTRIBUTION BAR ===== -->
   <sc-if value="{{ bannerOpen }}" hint-placeholder-val="{{ true }}">
-    <div style="position:sticky; top:64px; z-index:39; background:color-mix(in srgb, var(--accent) 16%, var(--bg)); border-bottom:1px solid color-mix(in srgb, var(--accent) 45%, transparent);">
+    <div style="position:sticky; top:0; z-index:39; background:color-mix(in srgb, var(--accent) 16%, var(--bg)); border-bottom:1px solid color-mix(in srgb, var(--accent) 45%, transparent);">
       <div style="max-width:1280px; margin:0 auto; padding:9px clamp(16px,4vw,40px); display:flex; align-items:center; gap:12px; font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.03em;">
         <span style="display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; border-radius:999px; border:1px solid var(--accent); color:var(--accent); font-size:11px; flex:none;">◆</span>
         <span style="color:var(--fg); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Shopping with <strong style="font-weight:500;">{{ partnerName }}</strong>'s code, <span style="color:var(--accent);">{{ partnerCode }}</span> applied</span>
@@ -101,7 +141,7 @@
         <div style="position:absolute; inset:0; background:linear-gradient(270deg, rgba(10,9,8,0.85) 0%, rgba(10,9,8,0.55) 26%, rgba(10,9,8,0.12) 44%, transparent 60%);"></div>
         <div class="shop-banner-content" style="position:relative; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:flex-end; text-align:right; gap:clamp(4px,0.8vw,8px); margin-left:auto;">
           <img class="shop-banner-logo" src="uploads/logo_neuronpadel.webp" alt="NEURONPADEL" style="width:auto; object-fit:contain; align-self:flex-end; margin-right:-6px;"/>
-          <div style="font-family:'IBM Plex Mono',monospace; font-size:clamp(11px,1.3vw,13px); letter-spacing:0.16em; text-transform:uppercase; color:var(--accent);">Official European distributor</div>
+          <div style="font-family:'IBM Plex Mono',monospace; font-size:clamp(11px,1.3vw,13px); letter-spacing:0.16em; text-transform:uppercase; color:var(--accent);">Official global distributor</div>
           <h2 style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:clamp(20px,3vw,34px); line-height:1.04; letter-spacing:-0.02em; margin:8px 0 0; color:#F6F4EF; text-wrap:balance;">High-end padel gear, exceptional value.</h2>
         </div>
       </div>
@@ -244,6 +284,10 @@
             <img src="assets/monello-sponsor.webp" alt="Pizzeria Monello" style="width:100%; max-width:220px; height:auto; display:block;"/>
           </a>
         </div>
+        <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:16px; margin-top:20px; background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:clamp(20px,3vw,28px);">
+          <p style="font-size:15px; line-height:1.5; color:var(--dim); margin:0; max-width:44ch;">Want your brand next to theirs? Become a BLUWX sponsor and get in front of our clubs, coaches and players.</p>
+          <a href="JoinForm.dc.html?type=company&reason=sponsor" style="flex-shrink:0; display:inline-flex; align-items:center; justify-content:center; background:var(--accent); color:var(--on-accent); font-weight:600; font-size:15px; padding:14px 26px; border-radius:999px; white-space:nowrap;" style-hover="filter:brightness(1.06);">Become a sponsor</a>
+        </div>
       </div>
     </section>
 
@@ -251,9 +295,9 @@
 
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;partnerName&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Joel Rodríguez&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;partnerCode&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;JOEL10&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;totalCount&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:124,&quot;tsType&quot;:&quot;number&quot;}}">
-const CATS = ["Rackets", "Apparel", "Padel Bags", "Balls", "Accessories"];
-const BRANDS = ["NeuronPadel"];
+<script type="text/x-dc" data-dc-script data-props="{&quot;partnerName&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Joel Rodríguez&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;partnerCode&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;JOEL5&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;totalCount&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:124,&quot;tsType&quot;:&quot;number&quot;}}">
+const CATS = ["Rackets", "Apparel", "Padel Bags", "Balls", "Accessories", "Footwear"];
+const BRANDS = ["NeuronPadel", "StarVie", "Adidas", "FILA", "Coco Padel", "Macron"];
 const euro = (n) => "€" + n.toFixed(2).replace(".", ",");
 
 // ---- DYNAMIC catalog data (one dataset per store; placeholders here) ----
@@ -265,16 +309,56 @@ const PRODUCTS = [
   { name: "Pro+ Shorts", slug: "shorts", brand: "NeuronPadel", cat: "Apparel", price: 25.5, stock: "in", new: 6, img: "uploads/np-shorts.webp" },
   { name: "Performance Padel Socks", slug: "socks", brand: "NeuronPadel", cat: "Accessories", price: 9, stock: "in", new: 5, img: "uploads/np-socks.webp" },
   { name: "Pro+ Balls · Box of 24", slug: "balls", brand: "NeuronPadel", cat: "Balls", price: 7, stock: "in", new: 4, img: "uploads/np-balls.webp" },
+  { name: "StarVie Metheora", slug: "metheora", brand: "StarVie", cat: "Rackets", price: 245, stock: "in", new: 14, img: "uploads/Pala StarVie BASALTO PRO 2025 - Gran Control y Potencia.jpg" },
+  { name: "StarVie Triton", slug: "triton", brand: "StarVie", cat: "Rackets", price: 215, stock: "in", new: 13, img: "uploads/Starvie Raptor+ Padelschläger  Padello Shop - Padello.webp" },
+  { name: "StarVie Player Bag", slug: "starvie-bag", brand: "StarVie", cat: "Padel Bags", price: 95, stock: "in", new: 12, img: "uploads/SB011_2048x.webp" },
+  { name: "StarVie Black Titan", slug: "black-titan", brand: "StarVie", cat: "Rackets", price: 230, stock: "in", new: 11, img: "uploads/121644-pala-starvie-drax-mas-pstdp31000-1500x1500-1.webp" },
+  { name: "StarVie Overgrip Pack · Red", slug: "overgrip-red", brand: "StarVie", cat: "Accessories", price: 8, stock: "in", new: 10, img: "uploads/MUÑEQUERA STAVIE ROJA STAR ROJA PACK 2 - MegaPadelStore.webp" },
+  { name: "Adidas Metalbone Superlight", slug: "metalbone-superlight", brand: "Adidas", cat: "Rackets", price: 259, stock: "in", new: 15, img: "uploads/adidas-racket.webp" },
+  { name: "FILA The Agilis", slug: "fila-agilis", brand: "FILA", cat: "Rackets", price: 219, stock: "in", new: 16, img: "uploads/racket-fila-1.webp" },
+  { name: "FILA Carbon 3K", slug: "fila-carbon-3k", brand: "FILA", cat: "Rackets", price: 235, stock: "in", new: 17, img: "uploads/racket-fila-2.jpg" },
+  { name: "Coco Padel Est. 2021 · Teal", slug: "coco-teal", brand: "Coco Padel", cat: "Rackets", price: 189, stock: "in", new: 18, img: "uploads/racket-coco-1.jpg" },
+  { name: "Coco Padel Est. 2021 · Noir", slug: "coco-noir", brand: "Coco Padel", cat: "Rackets", price: 189, stock: "in", new: 19, img: "uploads/racket-coco-2.jpg" },
+  { name: "Macron Training Shoe", slug: "macron-shoe", brand: "Macron", cat: "Footwear", price: 79, stock: "in", new: 20, img: "uploads/shoe-macron-1.jpg" },
+  { name: "Macron Performance Tank", slug: "macron-tank", brand: "Macron", cat: "Apparel", price: 32, stock: "in", new: 21, img: "uploads/ropa-macron-1.jpg" },
+  { name: "Macron Performance Tee", slug: "macron-tee", brand: "Macron", cat: "Apparel", price: 29, stock: "in", new: 22, img: "uploads/ropa-macron-2.jpg" },
 ];
 
 class Component extends DCLogic {
-  state = { theme: "dark", filterOpen: false, bannerOpen: true, cats: [], brands: [], price: "all", inStock: false, sort: "relevance", cartCount: 0 };
+  state = { theme: "dark", filterOpen: false, bannerOpen: true, cats: [], brands: [], price: "all", inStock: false, sort: "relevance", cartCount: 0, menuOpen: false, langOpen: false, lang: "EN", compact: false };
 
   componentDidMount() {
     this.setState({ cartCount: window.CartStore ? window.CartStore.count() : 0 });
     this._off = window.CartStore ? window.CartStore.onChange(() => this.setState({ cartCount: window.CartStore.count() })) : null;
+    if (window.__bluwxHeaderScrollBound) { this._ownsScrollLock = false; }
+    else {
+      window.__bluwxHeaderScrollBound = true;
+      this._ownsScrollLock = true;
+      this._lastY = window.scrollY || 0;
+      let ticking = false;
+      this._onScroll = () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          const y = window.scrollY || 0;
+          const goingDown = y > this._lastY + 2;
+          const goingUp = y < this._lastY - 2;
+          let next = this.state.compact;
+          if (y < 32) next = false;
+          else if (goingDown && y > 110) next = true;
+          else if (goingUp) next = false;
+          this._lastY = y;
+          ticking = false;
+          if (next !== this.state.compact) this.setState({ compact: next });
+        });
+      };
+      window.addEventListener("scroll", this._onScroll, { passive: true });
+    }
   }
-  componentWillUnmount() { if (this._off) this._off(); }
+  componentWillUnmount() {
+    if (this._off) this._off();
+    if (this._ownsScrollLock) { window.removeEventListener("scroll", this._onScroll); window.__bluwxHeaderScrollBound = false; }
+  }
 
   _toggleArr(key, val) {
     this.setState(s => {
@@ -305,7 +389,50 @@ class Component extends DCLogic {
 
     const catCount = (c) => PRODUCTS.filter(x => x.cat === c).length;
 
+    const compact = s.compact;
+    const TRANS = "transition: top .4s cubic-bezier(.4,0,.2,1), width .4s cubic-bezier(.4,0,.2,1), border-radius .4s ease, background .3s ease;";
+    const headerStyle = compact
+      ? `position:fixed; top:10px; left:50%; right:auto; transform:translateX(-50%); z-index:40; width:min(420px,92vw); border-radius:999px; background:color-mix(in srgb, var(--bg) 62%, transparent); backdrop-filter:blur(20px) saturate(1.6); -webkit-backdrop-filter:blur(20px) saturate(1.6); border:1px solid color-mix(in srgb, var(--fg) 14%, transparent); box-shadow:0 12px 34px rgba(0,0,0,0.26), inset 0 1px 0 color-mix(in srgb, var(--fg) 10%, transparent); ${TRANS}`
+      : `position:fixed; top:clamp(12px,2.4vw,20px); left:50%; right:auto; transform:translateX(-50%); z-index:40; width:min(1280px, calc(100vw - clamp(24px,6vw,56px))); border-radius:999px; background:color-mix(in srgb, var(--bg) 55%, transparent); backdrop-filter:blur(20px) saturate(1.6); -webkit-backdrop-filter:blur(20px) saturate(1.6); border:1px solid color-mix(in srgb, var(--fg) 14%, transparent); box-shadow:0 12px 34px rgba(0,0,0,0.22), inset 0 1px 0 color-mix(in srgb, var(--fg) 10%, transparent); ${TRANS}`;
+    const headerInnerStyle = compact
+      ? "max-width:1280px; margin:0 auto; padding:0 10px 0 18px; height:52px; display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:8px; transition:all .35s cubic-bezier(.4,0,.2,1);"
+      : "max-width:1280px; margin:0 auto; padding:0 clamp(16px,4vw,32px); height:60px; display:flex; align-items:center; justify-content:space-between; gap:24px; transition:all .35s cubic-bezier(.4,0,.2,1);";
+    const logoStyle = `font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:${compact ? "19px" : "22px"}; letter-spacing:0.14em; color:var(--fg); transition:font-size .35s ease;` + (compact ? " grid-column:2; justify-self:center;" : "");
+    const navStyle = "align-items:center; gap:34px; font-size:14px; font-weight:500;" + (compact ? " display:none;" : "");
+    const rightGroupStyle = compact
+      ? "display:flex; align-items:center; gap:8px; grid-column:3; justify-self:end;"
+      : "display:flex; align-items:center; gap:16px;";
+    const langWrapStyle = "position:relative;" + (compact ? " display:none;" : "");
+    const themeBtnStyle = "border:1px solid var(--line-strong); background:transparent; color:var(--fg); font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:0.06em; padding:7px 12px; cursor:pointer; border-radius:999px; transition:border-color .2s, color .2s;" + (compact ? " display:none;" : "");
+    const LANGS = [
+      { code: "EN", flag: "🇬🇧", label: "English" },
+      { code: "IT", flag: "🇮🇹", label: "Italiano" },
+      { code: "ES", flag: "🇪🇸", label: "Español" },
+      { code: "DE", flag: "🇩🇪", label: "Deutsch" },
+      { code: "FR", flag: "🇫🇷", label: "Français" },
+    ];
+    const currentLang = LANGS.find(l => l.code === s.lang) || LANGS[0];
+    const NAV_ITEMS = [
+      { label: "Network", href: "index.dc.html" },
+      { label: "Shop", href: "Shop.dc.html" },
+      { label: "Clubs", href: "Directory.dc.html" },
+      { label: "Coaches", href: "Directory.dc.html" },
+      { label: "Journal", href: "#" },
+    ];
+
     return {
+      headerStyle, headerInnerStyle, logoStyle, navStyle, rightGroupStyle, langWrapStyle, themeBtnStyle,
+      langOpen: s.langOpen,
+      toggleLang: () => this.setState(st => ({ langOpen: !st.langOpen })),
+      currentLang,
+      langs: LANGS.map(l => ({
+        ...l,
+        color: l.code === s.lang ? "var(--accent)" : "var(--fg)",
+        select: () => this.setState({ lang: l.code, langOpen: false }),
+      })),
+      menuOpen: s.menuOpen,
+      toggleMenu: () => this.setState(st => ({ menuOpen: !st.menuOpen })),
+      navItems: NAV_ITEMS.map(n => ({ ...n, color: n.label === "Shop" ? "var(--accent)" : "var(--fg)" })),
       theme: s.theme,
       themeLabel: s.theme === "dark" ? "LIGHT ☀" : "DARK ☾",
       toggleTheme: () => this.setState(st => ({ theme: st.theme === "dark" ? "light" : "dark" })),
@@ -322,7 +449,7 @@ class Component extends DCLogic {
 
       // attribution (dynamic per session)
       partnerName: p.partnerName ?? "Joel Rodríguez",
-      partnerCode: p.partnerCode ?? "JOEL10",
+      partnerCode: p.partnerCode ?? "JOEL5",
 
       cartCount: s.cartCount,
       totalCount: p.totalCount ?? 124,
